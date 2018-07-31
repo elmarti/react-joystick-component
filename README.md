@@ -4,6 +4,7 @@ A joystick component, written entirely in React.
 I've churned this out and it works pretty nicely, so nice documentation will follow shortly.
 
 At the time of writing, this is untested, but i'll be using this in a big project, so it will be shortly. 
+EXPECT BREAKING CHANGES 
 ```
 import { Joystick } from 'react-joystick-component';
 ```
