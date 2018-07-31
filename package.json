@@ -1,0 +1,36 @@
+{
+  "name": "react-joystick-component",
+  "version": "0.1.0",
+  "main": "build/lib/index.js",
+  "types": "build/lib/index.d.ts",
+  "files": [
+    "build/lib"
+  ],
+  "scripts": {
+    "storybook": "start-storybook -p 6006 -c .storybook",
+    "build": "tsc"
+  },
+  "repository": "https://github.com/elmarti/react-joystick-component",
+  "author": "elmarti info@elmarti.tech",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/addon-info": "^3.4.0",
+    "@storybook/react": "^3.4.0",
+    "@types/jest": "^22.2.2",
+    "@types/react": "~16.4.7",
+    "@types/storybook__addon-info": "^3.2.3",
+    "@types/storybook__react": "^3.0.8",
+    "awesome-typescript-loader": "^4.0.1",
+    "babel-core": "^6.26.0",
+    "cpx": "^1.5.0",
+    "jest": "^22.4.3",
+    "react-docgen-typescript-webpack-plugin": "^1.1.0",
+    "storybook-addon-jsx": "^5.3.0",
+    "ts-jest": "^22.4.2",
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1"
+  }
+}
