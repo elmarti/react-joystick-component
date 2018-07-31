@@ -124,8 +124,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     render() {
         this.baseSize = this.props.size || 100;
-        const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "red";
-        const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "blue";
+        const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
+        const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
 
         const baseSizeString: string = `${this.baseSize}px`;
         const stickSize: string = `${this.baseSize / 1.5}px`;
