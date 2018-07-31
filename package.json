@@ -8,16 +8,19 @@
   ],
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "repository": "https://github.com/elmarti/react-joystick-component",
   "author": "elmarti info@elmarti.tech",
   "license": "MIT",
   "devDependencies": {
+    "@storybook/addon-actions": "~3.4.8",
     "@storybook/addon-info": "^3.4.0",
     "@storybook/react": "^3.4.0",
     "@types/jest": "^22.2.2",
     "@types/react": "~16.4.7",
+    "@types/storybook__addon-actions": "~3.4.0",
     "@types/storybook__addon-info": "^3.2.3",
     "@types/storybook__react": "^3.0.8",
     "awesome-typescript-loader": "^4.0.1",
