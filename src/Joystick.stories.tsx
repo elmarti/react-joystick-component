@@ -7,6 +7,7 @@ import { Joystick } from "./Joystick";
 
 const joystickStories = storiesOf('Joystick Examples', module);
 
+
 joystickStories.add("Default joystick", ()=> <Joystick start={action("Started")} move={action("Moved")} stop={action("Stopped")} />);
 
 
@@ -21,3 +22,36 @@ joystickStories.add("200ms throttled joystick", ()=> <Joystick start={action("St
 
 
 joystickStories.add("500ms throttled joystick", ()=> <Joystick start={action("Started")} throttle={500} move={action("Moved")} stop={action("Stopped")} />);
+
+interface IDirectionComponentState {
+    direction:string;
+}
+interface IDirectionCompnentProps {
+
+}
+class DirectionComponent extends React.Component<IDirectionCompnentProps, IDirectionComponentState> {
+    constructor(props:any){
+        super(props);
+        this.state = {
+            direction:"Stopped"
+        };
+    }
+    private _handleMove(data:any){
+        this.setState({
+            direction: data.direction
+        });
+    }
+    private _handleStop(data:any){
+        this.setState({
+            direction: "Stopped"
+        });
+    }
+    render(){
+        return (<div>
+            <Joystick move={this._handleMove.bind(this)} stop={this._handleStop.bind(this)} />
+            <p>{this.state.direction}</p>
+        </div>);
+    }
+}
+
+joystickStories.add("Default with direction text", ()=><DirectionComponent/>)

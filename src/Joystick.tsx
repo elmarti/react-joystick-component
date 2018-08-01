@@ -14,13 +14,14 @@ export interface IJoystickUpdateEvent {
     type: "move" | "stop" | "start";
     x: number | null;
     y: number | null;
+    direction: JoystickDirection | null;
 }
 
 export interface IJoystickState {
     dragging: boolean;
     coordinates?: IJoystickCoordinates;
 }
-
+type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
 export interface IJoystickCoordinates {
     relativeX: number;
     relativeY: number;
@@ -28,6 +29,7 @@ export interface IJoystickCoordinates {
     absoluteY: number;
     axisX: number;
     axisY: number;
+    direction: JoystickDirection;
 }
 
 class Joystick extends React.Component<IJoystickProps, IJoystickState> {
@@ -79,7 +81,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this._throttleMoveCallback({
             type: "move",
             x: coordinates.relativeX,
-            y: Math.abs(coordinates.relativeY)
+            y: Math.abs(coordinates.relativeY),
+            direction: coordinates.direction
         });
 
     }
@@ -95,22 +98,45 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.props.start({
                 type: "start",
                 x: null,
-                y: null
-            })
+                y: null,
+                direction: null
+            });
         }
     }
 
+    private _getDirection(atan2: number) : JoystickDirection {
+
+        //half pi 1.57079632679
+        //quarter pi 0.78539816339
+        // forward = 3.14
+        // backwards = 0
+        // right = 1.5
+        // left = -1.5
+        if(atan2 > 2.35619449 || atan2 < -2.35619449){
+            return "FORWARD";
+        } else if(atan2 < 2.35619449 && atan2 > 0.785398163) {
+            return "RIGHT"
+        } else if(atan2 < -0.785398163){
+            return "LEFT";
+        }
+        return "BACKWARD";
+
+
+    }
     private mouseMove(event: any) {
         if (this.state.dragging) {
             const absoluteX = event.clientX;
             const absoluteY = event.clientY;
             const relativeX = absoluteX - this._parentRect.left - (this._baseSize / 2);
             const relativeY = absoluteY - this._parentRect.top - (this._baseSize / 2);
+            const atan2 = Math.atan2(relativeX, relativeY);
+
             this.updatePos({
                 relativeX,
                 relativeY,
                 absoluteX,
                 absoluteY,
+                direction: this._getDirection(atan2),
                 axisX: absoluteX - this._parentRect.left,
                 axisY: absoluteY - this._parentRect.top
             });
@@ -127,7 +153,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.props.stop({
                 type: "stop",
                 x: null,
-                y: null
+                y: null,
+                direction: null
             });
         }
 
