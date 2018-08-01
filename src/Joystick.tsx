@@ -64,13 +64,13 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         })();
 
         this._boundMouseUp = () => {
-            this.mouseUp();
+            this._mouseUp();
         };
 
 
     }
 
-    private updatePos(coordinates: IJoystickCoordinates) {
+    private _updatePos(coordinates: IJoystickCoordinates) {
         window.requestAnimationFrame(() => {
             this.setState({
                 coordinates
@@ -85,7 +85,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
-    private mouseDown(e: any) {
+    private _mouseDown(e: any) {
         this._parentRect = this._baseRef.current.getBoundingClientRect();
 
         this.setState({
@@ -114,7 +114,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
 
     }
-    private mouseMove(event: any) {
+    private _mouseMove(event: any) {
         if (this.state.dragging) {
             const absoluteX = event.clientX;
             const absoluteY = event.clientY;
@@ -122,7 +122,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             const relativeY = absoluteY - this._parentRect.top - (this._baseSize / 2);
             const atan2 = Math.atan2(relativeX, relativeY);
 
-            this.updatePos({
+            this._updatePos({
                 relativeX,
                 relativeY,
                 direction: this._getDirection(atan2),
@@ -132,7 +132,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
     }
 
-    private mouseUp() {
+    private _mouseUp() {
         this.setState({
             dragging: false,
             coordinates: undefined
@@ -181,7 +181,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
 
         return (
-            <div onMouseMove={this.mouseMove.bind(this)} onMouseDown={this.mouseDown.bind(this)} ref={this._baseRef}
+            <div onMouseMove={this._mouseMove.bind(this)} onMouseDown={this._mouseDown.bind(this)} ref={this._baseRef}
                  style={baseStyle}>
                 <div ref={this._stickRef} style={stickStyle}></div>
             </div>
