@@ -25,8 +25,6 @@ type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
 export interface IJoystickCoordinates {
     relativeX: number;
     relativeY: number;
-    absoluteX: number;
-    absoluteY: number;
     axisX: number;
     axisY: number;
     direction: JoystickDirection;
@@ -105,13 +103,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     private _getDirection(atan2: number) : JoystickDirection {
-
-        //half pi 1.57079632679
-        //quarter pi 0.78539816339
-        // forward = 3.14
-        // backwards = 0
-        // right = 1.5
-        // left = -1.5
         if(atan2 > 2.35619449 || atan2 < -2.35619449){
             return "FORWARD";
         } else if(atan2 < 2.35619449 && atan2 > 0.785398163) {
@@ -134,8 +125,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.updatePos({
                 relativeX,
                 relativeY,
-                absoluteX,
-                absoluteY,
                 direction: this._getDirection(atan2),
                 axisX: absoluteX - this._parentRect.left,
                 axisY: absoluteY - this._parentRect.top
@@ -172,7 +161,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             width: baseSizeString,
             background: baseColor,
             borderRadius: this._baseSize,
-
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
