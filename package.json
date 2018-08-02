@@ -9,7 +9,8 @@
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build": "tsc",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "repository": "https://github.com/elmarti/react-joystick-component",
   "author": "elmarti info@elmarti.tech",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@storybook/addon-actions": "4.0.0-alpha.14",
     "@storybook/react": "4.0.0-alpha.14",
+    "@storybook/storybook-deployer": "^2.3.0",
     "@types/jest": "^22.2.2",
     "@types/react": "~16.4.7",
     "@types/storybook__addon-actions": "~3.4.0",
