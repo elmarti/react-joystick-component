@@ -1,5 +1,8 @@
 ## React Joystick Component
 
+[![Build Status](https://travis-ci.org/elmarti/react-joystick-component.svg?branch=master)](https://travis-ci.org/elmarti/react-joystick-component)
+
+
 ```
 import { Joystick } from 'react-joystick-component';
 ```
