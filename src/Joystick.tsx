@@ -37,6 +37,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _boundMouseUp: EventListenerOrEventListenerObject;
     private _baseSize: number;
     private _parentRect: ClientRect;
+    private _boundMouseMove: (event:any) => void;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -66,6 +67,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this._boundMouseUp = () => {
             this._mouseUp();
         };
+        this._boundMouseMove = (event:any)  => {
+            this._mouseMove(event);
+        }
 
 
     }
@@ -92,6 +96,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             dragging: true
         });
         window.addEventListener("mouseup", this._boundMouseUp);
+        window.addEventListener("mousemove", this._boundMouseMove);
+
         if (this.props.start) {
             this.props.start({
                 type: "start",
@@ -114,12 +120,24 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
 
     }
+    private _getWithinBounds(value:number): number {
+        const halfBaseSize = this._baseSize / 2;
+        if(value > halfBaseSize){
+            return halfBaseSize;
+        }
+        if(value < -(halfBaseSize)){
+            return halfBaseSize * -1;
+        }
+        return value
+    }
     private _mouseMove(event: any) {
         if (this.state.dragging) {
             const absoluteX = event.clientX;
             const absoluteY = event.clientY;
-            const relativeX = absoluteX - this._parentRect.left - (this._baseSize / 2);
-            const relativeY = absoluteY - this._parentRect.top - (this._baseSize / 2);
+
+
+            const relativeX = this._getWithinBounds(absoluteX - this._parentRect.left - (this._baseSize / 2));
+            const relativeY = this._getWithinBounds(absoluteY - this._parentRect.top - (this._baseSize / 2));
             const atan2 = Math.atan2(relativeX, relativeY);
 
             this._updatePos({
@@ -138,6 +156,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             coordinates: undefined
         });
         window.removeEventListener("mouseup", this._boundMouseUp);
+        window.removeEventListener("mousemove", this._boundMouseMove);
+
         if (this.props.stop) {
             this.props.stop({
                 type: "stop",
@@ -148,15 +168,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
 
     }
-
-    render() {
-        this._baseSize = this.props.size || 100;
+    private _getBaseStyle(): any {
         const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
-        const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
 
         const baseSizeString: string = `${this._baseSize}px`;
-        const stickSize: string = `${this._baseSize / 1.5}px`;
-        const baseStyle = {
+        return {
             height: baseSizeString,
             width: baseSizeString,
             background: baseColor,
@@ -165,25 +181,40 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             justifyContent: 'center',
             alignItems: 'center'
         };
-        let stickStyle = {
+
+    }
+    private _getStickStyle(): any {
+        const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
+        const stickSize: string = `${this._baseSize / 1.5}px`;
+
+        let stickStyle= {
             background: stickColor,
-            cursor: "move",
+                cursor: "move",
             height: stickSize,
             width: stickSize,
             borderRadius: this._baseSize,
             flexShrink: 0
         };
+
         if (this.state.dragging && this.state.coordinates !== undefined) {
             stickStyle = Object.assign({}, stickStyle, {
                 position: 'absolute',
                 transform: `translate3d(${this.state.coordinates.relativeX}px, ${this.state.coordinates.relativeY}px, 0)`
             });
         }
+        return stickStyle;
+    }
+    render() {
+        this._baseSize = this.props.size || 100;
+        const baseStyle = this._getBaseStyle();
+        const stickStyle = this._getStickStyle();
 
         return (
-            <div onMouseMove={this._mouseMove.bind(this)} onMouseDown={this._mouseDown.bind(this)} ref={this._baseRef}
+            <div onMouseDown={this._mouseDown.bind(this)}
+                 ref={this._baseRef}
                  style={baseStyle}>
-                <div ref={this._stickRef} style={stickStyle}></div>
+                <div ref={this._stickRef}
+                     style={stickStyle}></div>
             </div>
         )
     }

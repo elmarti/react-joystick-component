@@ -1,6 +1,6 @@
 {
   "name": "react-joystick-component",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "files": [
