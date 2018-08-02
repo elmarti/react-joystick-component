@@ -7,4 +7,3 @@ cache:
 script:
 - npm run build
 - npm run deploy-storybook -- --ci
-branch: master
