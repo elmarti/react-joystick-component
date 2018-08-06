@@ -8,7 +8,7 @@
     "build/lib"
   ],
   "scripts": {
-    "storybook": "start-storybook -p 6006 -c .storybook",
+    "storybook": "start-storybook -p 8080 -h $IP -c .storybook",
     "build": "tsc",
     "prepublish": "npm run build",
     "deploy-storybook": "storybook-to-ghpages"
