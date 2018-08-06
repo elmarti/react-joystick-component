@@ -1,14 +1,14 @@
 {
   "name": "react-joystick-component",
   "description": "A snazzy React joystick component",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "files": [
     "build/lib"
   ],
   "scripts": {
-    "storybook": "start-storybook -p 8008 -c .storybook",
+    "storybook": "start-storybook -p 6006 -c .storybook",
     "build": "tsc",
     "prepublish": "npm run build",
     "deploy-storybook": "storybook-to-ghpages"
