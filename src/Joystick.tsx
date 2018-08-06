@@ -110,7 +110,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         } else {
             window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
             window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-            
         }
 
         if (this.props.start) {
