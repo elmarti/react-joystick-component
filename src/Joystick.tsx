@@ -9,6 +9,14 @@ export interface IJoystickProps {
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
 }
+enum InteractionEvents {
+    MouseDown = "mousedown",
+    MouseMove = "mousemove",
+    MouseUp = "mouseup",
+    TouchStart = "touchstart",
+    TouchMove = "touchmove",
+    TouchEnd = "touchend"
+}
 
 export interface IJoystickUpdateEvent {
     type: "move" | "stop" | "start";
@@ -95,8 +103,14 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this.setState({
             dragging: true
         });
-        window.addEventListener("mouseup", this._boundMouseUp);
-        window.addEventListener("mousemove", this._boundMouseMove);
+        
+        if(e.type === InteractionEvents.MouseDown){
+            window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
+            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+        } else {
+            window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
+            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+        }
 
         if (this.props.start) {
             this.props.start({
@@ -132,8 +146,15 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
     private _mouseMove(event: any) {
         if (this.state.dragging) {
-            const absoluteX = event.clientX;
-            const absoluteY = event.clientY;
+        let absoluteX = null;
+        let absoluteY = null;
+        if(event.type === InteractionEvents.MouseMove){
+            absoluteX = event.clientX;
+            absoluteY = event.clientY;
+        } else {
+            absoluteX = event.touches[0].clientX;
+            absoluteY = event.touches[0].clientY;
+        }
 
 
             const relativeX = this._getWithinBounds(absoluteX - this._parentRect.left - (this._baseSize / 2));
@@ -211,6 +232,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
         return (
             <div onMouseDown={this._mouseDown.bind(this)}
+                 onTouchStart={this._mouseDown.bind(this)}
                  ref={this._baseRef}
                  style={baseStyle}>
                 <div ref={this._stickRef}
