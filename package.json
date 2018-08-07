@@ -1,7 +1,10 @@
 {
   "name": "react-joystick-component",
   "description": "A snazzy React joystick component",
-  "version": "1.2.0",
+  "version": "1.2.1",
+  "keywords": [
+    "react", "joystick", "control", "component", "typescript"
+  ],
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "files": [
