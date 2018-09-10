@@ -5,6 +5,7 @@ export interface IJoystickProps {
     baseColor?: string;
     stickColor?: string;
     throttle?: number;
+    disabled?: boolean;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
@@ -98,27 +99,29 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     private _mouseDown(e: any) {
-        this._parentRect = this._baseRef.current.getBoundingClientRect();
+        if(this.props.disabled !== true){
+            this._parentRect = this._baseRef.current.getBoundingClientRect();
 
-        this.setState({
-            dragging: true
-        });
-        
-        if(e.type === InteractionEvents.MouseDown){
-            window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
-            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-        } else {
-            window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
-            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-        }
-
-        if (this.props.start) {
-            this.props.start({
-                type: "start",
-                x: null,
-                y: null,
-                direction: null
+            this.setState({
+                dragging: true
             });
+            
+            if(e.type === InteractionEvents.MouseDown){
+                window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
+                window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+            } else {
+                window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
+                window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+            }
+
+            if (this.props.start) {
+                this.props.start({
+                    type: "start",
+                    x: null,
+                    y: null,
+                    direction: null
+                });
+            }
         }
     }
 
@@ -229,13 +232,14 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this._baseSize = this.props.size || 100;
         const baseStyle = this._getBaseStyle();
         const stickStyle = this._getStickStyle();
-
         return (
-            <div onMouseDown={this._mouseDown.bind(this)}
+            <div className={this.props.disabled ? 'joystick-base-disabled': ''}
+                 onMouseDown={this._mouseDown.bind(this)}
                  onTouchStart={this._mouseDown.bind(this)}
                  ref={this._baseRef}
                  style={baseStyle}>
                 <div ref={this._stickRef}
+                    className={this.props.disabled ? 'joystick-disabled': ''}
                      style={stickStyle}></div>
             </div>
         )

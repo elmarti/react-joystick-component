@@ -24,12 +24,14 @@ Component Props - as described by IJoystickProps
 |  move | Function  | Callback fired on every mouse move, not throttled unless a throttling rate is provided as above  |
 |  stop | Function  | Callback fired when the user releases the joystick  |
 | start  |  Function | Callback fired when the user starts moving the Joystick  |
+| disabled | Boolean | When true, block any usage of the Joystick. This will also apply the `joystick-disabled` and `joystick-base-disabled` classNames  |
 
 ```TypeScript
 interface IJoystickProps {
     size?: number;
     baseColor?: string;
     stickColor?: string;
+    disabled?: boolean;
     throttle?: number;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
