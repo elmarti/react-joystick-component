@@ -227,6 +227,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             });
         }
         return stickStyle;
+        
     }
     render() {
         this._baseSize = this.props.size || 100;
