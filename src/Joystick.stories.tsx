@@ -26,6 +26,7 @@ joystickStories.add("500ms throttled joystick", ()=> <Joystick start={action("St
 
 joystickStories.add("HUGE joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={500}/>);
 joystickStories.add("Tiny joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={50}/>);
+joystickStories.add("Disabled joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  disabled={true}/>);
 
 interface IDirectionComponentState {
     direction:string;
