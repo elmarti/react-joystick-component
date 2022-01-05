@@ -45,6 +45,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _throttleMoveCallback: (data: any) => void;
     private _boundMouseUp: EventListenerOrEventListenerObject;
     private _baseSize: number;
+    private _radius: number;
     private _parentRect: ClientRect;
     private _boundMouseMove: (event:any) => void;
 
@@ -137,16 +138,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
 
     }
-    private _getWithinBounds(value:number): number {
-        const halfBaseSize = this._baseSize / 2;
-        if(value > halfBaseSize){
-            return halfBaseSize;
-        }
-        if(value < -(halfBaseSize)){
-            return halfBaseSize * -1;
-        }
-        return value
+
+    private _distance(x: number, y: number,): number {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
+
     private _mouseMove(event: any) {
         if (this.state.dragging) {
         let absoluteX = null;
@@ -160,8 +156,13 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
 
 
-            const relativeX = this._getWithinBounds(absoluteX - this._parentRect.left - (this._baseSize / 2));
-            const relativeY = this._getWithinBounds(absoluteY - this._parentRect.top - (this._baseSize / 2));
+            let relativeX = absoluteX - this._parentRect.left - this._radius;
+            let relativeY = absoluteY - this._parentRect.top - this._radius;
+            const dist = this._distance(relativeX, relativeY);
+            if(dist > this._radius) {
+                relativeX *= this._radius / dist;
+                relativeY *= this._radius / dist;
+            }
             const atan2 = Math.atan2(relativeX, relativeY);
 
             this._updatePos({
@@ -231,6 +232,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
     render() {
         this._baseSize = this.props.size || 100;
+        this._radius = this._baseSize / 2;
         const baseStyle = this._getBaseStyle();
         const stickStyle = this._getStickStyle();
         return (
