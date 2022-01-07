@@ -44,4 +44,3 @@ jobs:
         env:
           GH_TOKEN: MyCompany:${{ secrets.GITHUB_TOKEN }}
 
-
