@@ -4,8 +4,10 @@
 
 [Click here to see examples](https://elmarti.github.io/react-joystick-component/)
 
+
 ```
 npm i react-joystick-component --save
+yarn add react-joystick-component
 ```
 
 ```

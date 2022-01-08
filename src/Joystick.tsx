@@ -14,6 +14,7 @@ export interface IJoystickProps {
     baseImage?: string;
     followCursor?: boolean;
 }
+
 enum InteractionEvents {
     MouseDown = "mousedown",
     MouseMove = "mousemove",
@@ -34,7 +35,9 @@ export interface IJoystickState {
     dragging: boolean;
     coordinates?: IJoystickCoordinates;
 }
+
 type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
+
 export interface IJoystickCoordinates {
     relativeX: number;
     relativeY: number;
@@ -50,7 +53,7 @@ export interface IJoystickCoordinates {
 enum RadianQuadrantBinding {
     TopRight = 2.35619449,
     TopLeft = -2.35619449,
-    BottomRight  = 0.785398163,
+    BottomRight = 0.785398163,
     BottomLeft = -0.785398163
 }
 
@@ -62,7 +65,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _baseSize: number;
     private _radius: number;
     private _parentRect: DOMRect;
-    private readonly _boundMouseMove: (event:any) => void;
+    private readonly _boundMouseMove: (event: any) => void;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -92,7 +95,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this._boundMouseUp = () => {
             this._mouseUp();
         };
-        this._boundMouseMove = (event:any)  => {
+        this._boundMouseMove = (event: any) => {
             this._mouseMove(event);
         }
 
@@ -100,32 +103,32 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     componentWillUnmount() {
-        if(this.props.followCursor) {
+        if (this.props.followCursor) {
             window.removeEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
             window.removeEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
         }
     }
 
     componentDidMount() {
-        if(this.props.followCursor){
-                this._parentRect = this._baseRef.current.getBoundingClientRect();
+        if (this.props.followCursor) {
+            this._parentRect = this._baseRef.current.getBoundingClientRect();
 
-                this.setState({
-                    dragging: true
+            this.setState({
+                dragging: true
+            });
+
+            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+
+
+            if (this.props.start) {
+                this.props.start({
+                    type: "start",
+                    x: null,
+                    y: null,
+                    direction: null
                 });
-
-                    window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-                    window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-
-
-                if (this.props.start) {
-                    this.props.start({
-                        type: "start",
-                        x: null,
-                        y: null,
-                        direction: null
-                    });
-                }
+            }
 
         }
     }
@@ -156,31 +159,31 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @private
      */
     private _mouseDown(e: MouseEvent) {
-        if(this.props.disabled || this.props.followCursor){
+        if (this.props.disabled || this.props.followCursor) {
             return;
         }
-            this._parentRect = this._baseRef.current.getBoundingClientRect();
+        this._parentRect = this._baseRef.current.getBoundingClientRect();
 
-            this.setState({
-                dragging: true
+        this.setState({
+            dragging: true
+        });
+
+        if (e.type === InteractionEvents.MouseDown) {
+            window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
+            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+        } else {
+            window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
+            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+        }
+
+        if (this.props.start) {
+            this.props.start({
+                type: "start",
+                x: null,
+                y: null,
+                direction: null
             });
-
-            if(e.type === InteractionEvents.MouseDown){
-                window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
-                window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-            } else {
-                window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
-                window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-            }
-
-            if (this.props.start) {
-                this.props.start({
-                    type: "start",
-                    x: null,
-                    y: null,
-                    direction: null
-                });
-            }
+        }
 
     }
 
@@ -190,12 +193,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param atan2: number
      * @private
      */
-    private _getDirection(atan2: number) : JoystickDirection {
-        if(atan2 > RadianQuadrantBinding.TopRight || atan2 < RadianQuadrantBinding.TopLeft){
+    private _getDirection(atan2: number): JoystickDirection {
+        if (atan2 > RadianQuadrantBinding.TopRight || atan2 < RadianQuadrantBinding.TopLeft) {
             return "FORWARD";
-        } else if(atan2 < RadianQuadrantBinding.TopRight && atan2 > RadianQuadrantBinding.BottomRight) {
+        } else if (atan2 < RadianQuadrantBinding.TopRight && atan2 > RadianQuadrantBinding.BottomRight) {
             return "RIGHT"
-        } else if(atan2 < RadianQuadrantBinding.BottomLeft){
+        } else if (atan2 < RadianQuadrantBinding.BottomLeft) {
             return "LEFT";
         }
         return "BACKWARD";
@@ -218,23 +221,23 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param event
      * @private
      */
-    private _mouseMove(event: MouseEvent|TouchEvent) {
+    private _mouseMove(event: MouseEvent | TouchEvent) {
         if (this.state.dragging) {
-        let absoluteX = null;
-        let absoluteY = null;
-        if(event instanceof MouseEvent){
-            absoluteX = event.clientX;
-            absoluteY = event.clientY;
-        } else {
-            absoluteX = event.touches[0].clientX;
-            absoluteY = event.touches[0].clientY;
-        }
+            let absoluteX = null;
+            let absoluteY = null;
+            if (event instanceof MouseEvent) {
+                absoluteX = event.clientX;
+                absoluteY = event.clientY;
+            } else {
+                absoluteX = event.touches[0].clientX;
+                absoluteY = event.touches[0].clientY;
+            }
 
 
             let relativeX = absoluteX - this._parentRect.left - this._radius;
             let relativeY = absoluteY - this._parentRect.top - this._radius;
             const dist = this._distance(relativeX, relativeY);
-            if(dist > this._radius) {
+            if (dist > this._radius) {
                 relativeX *= this._radius / dist;
                 relativeY *= this._radius / dist;
             }
@@ -258,8 +261,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         const stateUpdate = {
             dragging: false,
         };
-        if(!this.props.sticky){
-            stateUpdate['coordinates'] = undefined;
+        if (!this.props.sticky) {
+            stateUpdate.coordinates = undefined;
         }
         this.setState(stateUpdate);
         window.removeEventListener("mouseup", this._boundMouseUp);
@@ -268,12 +271,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (this.props.stop) {
             this.props.stop({
                 type: "stop",
-                //@ts-ignore
+                // @ts-ignore
                 x: this.props.sticky ? this.state.coordinates.relativeX : null,
-                //@ts-ignore
+                // @ts-ignore
                 y: this.props.sticky ? this.state.coordinates.relativeY : null,
-                //@ts-ignore
-                direction: this.props.sticky ? this.state.coordinates.direction :  null
+                // @ts-ignore
+                direction: this.props.sticky ? this.state.coordinates.direction : null
             });
         }
 
@@ -286,8 +289,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _getBaseStyle(): any {
         const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
 
-        const baseSizeString: string = `${this._baseSize}px`;
-        const padStyle =  {
+        const baseSizeString = `${this._baseSize}px`;
+        const padStyle = {
             height: baseSizeString,
             width: baseSizeString,
             background: baseColor,
@@ -296,9 +299,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             justifyContent: 'center',
             alignItems: 'center'
         };
-        if(this.props.baseImage){
-            padStyle['background'] = `url(${this.props.baseImage})`;
-            padStyle['backgroundSize'] = '100%'
+        if (this.props.baseImage) {
+            padStyle.background = `url(${this.props.baseImage})`;
+            padStyle.backgroundSize = '100%'
         }
         return padStyle;
 
@@ -310,20 +313,20 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      */
     private _getStickStyle(): any {
         const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
-        const stickSize: string = `${this._baseSize / 1.5}px`;
+        const stickSize = `${this._baseSize / 1.5}px`;
 
-        let stickStyle= {
+        let stickStyle = {
             background: stickColor,
-                cursor: "move",
+            cursor: "move",
             height: stickSize,
             width: stickSize,
             border: 'none',
             borderRadius: this._baseSize,
             flexShrink: 0
         };
-        if(this.props.stickImage){
-            stickStyle['background'] = `url(${this.props.stickImage})`;
-            stickStyle['backgroundSize'] = '100%'
+        if (this.props.stickImage) {
+            stickStyle.background = `url(${this.props.stickImage})`;
+            stickStyle.backgroundSize = '100%'
         }
 
         if (this.state.coordinates !== undefined) {
@@ -333,23 +336,24 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             });
         }
         return stickStyle;
-        
+
     }
+
     render() {
         this._baseSize = this.props.size || 100;
         this._radius = this._baseSize / 2;
         const baseStyle = this._getBaseStyle();
         const stickStyle = this._getStickStyle();
         return (
-            <div className={this.props.disabled ? 'joystick-base-disabled': ''}
+            <div className={this.props.disabled ? 'joystick-base-disabled' : ''}
                  onMouseDown={this._mouseDown.bind(this)}
                  onTouchStart={this._mouseDown.bind(this)}
-                 
+
                  ref={this._baseRef}
                  style={baseStyle}>
                 <button ref={this._stickRef}
-                    className={this.props.disabled ? 'joystick-disabled': ''}
-                     style={stickStyle}/>
+                        className={this.props.disabled ? 'joystick-disabled' : ''}
+                        style={stickStyle}/>
             </div>
         )
     }
