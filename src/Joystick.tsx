@@ -99,6 +99,13 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
+    componentWillUnmount() {
+        if(this.props.followCursor) {
+            window.removeEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+            window.removeEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+        }
+    }
+
     componentDidMount() {
         if(this.props.followCursor){
                 this._parentRect = this._baseRef.current.getBoundingClientRect();
