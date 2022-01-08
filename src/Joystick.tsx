@@ -6,6 +6,7 @@ export interface IJoystickProps {
     stickColor?: string;
     throttle?: number;
     disabled?: boolean;
+    sticky?: boolean;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
@@ -219,19 +220,25 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @private
      */
     private _mouseUp() {
-        this.setState({
+        const stateUpdate = {
             dragging: false,
-            coordinates: undefined
-        });
+        };
+        if(!this.props.sticky){
+            stateUpdate['coordinates'] = undefined;
+        }
+        this.setState(stateUpdate);
         window.removeEventListener("mouseup", this._boundMouseUp);
         window.removeEventListener("mousemove", this._boundMouseMove);
 
         if (this.props.stop) {
             this.props.stop({
                 type: "stop",
-                x: null,
-                y: null,
-                direction: null
+                //@ts-ignore
+                x: this.props.sticky ? this.state.coordinates.relativeX : null,
+                //@ts-ignore
+                y: this.props.sticky ? this.state.coordinates.relativeY : null,
+                //@ts-ignore
+                direction: this.props.sticky ? this.state.coordinates.direction :  null
             });
         }
 
@@ -275,7 +282,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             flexShrink: 0
         };
 
-        if (this.state.dragging && this.state.coordinates !== undefined) {
+        if (this.state.coordinates !== undefined) {
             stickStyle = Object.assign({}, stickStyle, {
                 position: 'absolute',
                 transform: `translate3d(${this.state.coordinates.relativeX}px, ${this.state.coordinates.relativeY}px, 0)`

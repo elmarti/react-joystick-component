@@ -14,7 +14,7 @@ import { Joystick } from 'react-joystick-component';
 
 
 ```React
-<Joystick size={100} baseColor="red" stickColor="blue" move={handleMove} stop={handleStop}></Joystick>
+<Joystick size={100} sticky={true} baseColor="red" stickColor="blue" move={handleMove} stop={handleStop}></Joystick>
 ```
 
 Component Props - as described by IJoystickProps
@@ -25,6 +25,7 @@ Component Props - as described by IJoystickProps
 |  baseColor |  string |  The color of the Joystick base |
 | stickColor  |  string |  The color of the Stick |
 |  throttle | number  |  The [throttling](https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf) rate of the move callback |
+| sticky | Boolean | Should the joystick stay where it is when the interaction ends |
 |  move | Function  | Callback fired on every mouse move, not throttled unless a throttling rate is provided as above  |
 |  stop | Function  | Callback fired when the user releases the joystick  |
 | start  |  Function | Callback fired when the user starts moving the Joystick  |
@@ -37,6 +38,7 @@ interface IJoystickProps {
     stickColor?: string;
     disabled?: boolean;
     throttle?: number;
+    sticky?: boolean;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;

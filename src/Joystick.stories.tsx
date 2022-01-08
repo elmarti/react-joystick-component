@@ -23,6 +23,9 @@ joystickStories.add("200ms throttled joystick", ()=> <Joystick start={action("St
 
 joystickStories.add("500ms throttled joystick", ()=> <Joystick start={action("Started")} throttle={500} move={action("Moved")} stop={action("Stopped")} />);
 
+joystickStories.add("Sticky joystick", ()=> <Joystick sticky={true} start={action("Started")} throttle={50} move={action("Moved")} stop={action("Stopped")} />);
+
+
 
 joystickStories.add("HUGE joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={500}/>);
 joystickStories.add("Tiny joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={50}/>);

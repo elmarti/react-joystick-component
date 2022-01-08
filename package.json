@@ -21,7 +21,7 @@
     "deploy-storybook": "storybook-to-ghpages"
   },
   "repository": "https://github.com/elmarti/react-joystick-component",
-  "author": "elmarti info@elmarti.tech",
+  "author": "elmarti elmarti.tech@gmail.com",
   "license": "MIT",
   "devDependencies": {
     "@storybook/addon-actions": "^6.4.9",
