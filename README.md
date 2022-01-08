@@ -28,6 +28,7 @@ Component Props - as described by IJoystickProps
 | sticky | Boolean | Should the joystick stay where it is when the interaction ends |
 | stickImage | string | The image to be shown for the joystick |
 | baseImage | string | The image to be shown for the pad |
+| followCursor | Boolean | Make the stick follow the cursor position |
 |  move | Function  | Callback fired on every mouse move, not throttled unless a throttling rate is provided as above  |
 |  stop | Function  | Callback fired when the user releases the joystick  |
 | start  |  Function | Callback fired when the user starts moving the Joystick  |
@@ -43,6 +44,7 @@ interface IJoystickProps {
     sticky?: boolean;
     stickImage?: string;
     baseImage?: string;
+    followCursor?: boolean;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
