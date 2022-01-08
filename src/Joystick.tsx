@@ -270,6 +270,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 cursor: "move",
             height: stickSize,
             width: stickSize,
+            border: 'none',
             borderRadius: this._baseSize,
             flexShrink: 0
         };
@@ -292,9 +293,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             <div className={this.props.disabled ? 'joystick-base-disabled': ''}
                  onMouseDown={this._mouseDown.bind(this)}
                  onTouchStart={this._mouseDown.bind(this)}
+                 
                  ref={this._baseRef}
                  style={baseStyle}>
-                <div ref={this._stickRef}
+                <button ref={this._stickRef}
                     className={this.props.disabled ? 'joystick-disabled': ''}
                      style={stickStyle}/>
             </div>
