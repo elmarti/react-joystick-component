@@ -10,6 +10,8 @@ export interface IJoystickProps {
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
+    joystickImage?: string;
+    padImage?: string;
 }
 enum InteractionEvents {
     MouseDown = "mousedown",
@@ -252,7 +254,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
 
         const baseSizeString: string = `${this._baseSize}px`;
-        return {
+        const padStyle =  {
             height: baseSizeString,
             width: baseSizeString,
             background: baseColor,
@@ -261,6 +263,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             justifyContent: 'center',
             alignItems: 'center'
         };
+        if(this.props.padImage){
+            padStyle['background'] = `url(${this.props.padImage})`;
+            padStyle['backgroundSize'] = '100%'
+        }
+        return padStyle;
 
     }
 
@@ -281,6 +288,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             borderRadius: this._baseSize,
             flexShrink: 0
         };
+        if(this.props.joystickImage){
+            stickStyle['background'] = `url(${this.props.joystickImage})`;
+            stickStyle['backgroundSize'] = '100%'
+        }
 
         if (this.state.coordinates !== undefined) {
             stickStyle = Object.assign({}, stickStyle, {

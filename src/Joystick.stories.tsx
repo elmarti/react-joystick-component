@@ -25,6 +25,7 @@ joystickStories.add("500ms throttled joystick", ()=> <Joystick start={action("St
 
 joystickStories.add("Sticky joystick", ()=> <Joystick sticky={true} start={action("Started")} throttle={50} move={action("Moved")} stop={action("Stopped")} />);
 
+joystickStories.add("Images", ()=> <Joystick padImage="http://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/fire.png" joystickImage="https://i.imgflip.com/1cf8by.jpg" start={action("Started")} throttle={50} move={action("Moved")} stop={action("Stopped")} />);
 
 
 joystickStories.add("HUGE joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={500}/>);
