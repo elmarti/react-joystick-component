@@ -64,6 +64,24 @@ joystickStories.add("Follow Cursor", () => (<div style={{padding: "50px", displa
     <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
               move={action("Moved")} stop={action("Stopped")}/>
 </div>));
+joystickStories.add("Many follow Cursor", () => (<div style={{padding: "50px", display: 'flex'}}>
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
+              move={action("Moved")} stop={action("Stopped")}/>
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
+              move={action("Moved")} stop={action("Stopped")}/>
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
+              move={action("Moved")} stop={action("Stopped")}/> <Joystick followCursor={true} start={action("Started")}
+                                                                          baseColor='grey' stickColor='black'
+                                                                          throttle={50}
+                                                                          move={action("Moved")}
+                                                                          stop={action("Stopped")}/> <Joystick
+    followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
+    move={action("Moved")} stop={action("Stopped")}/> <Joystick followCursor={true} start={action("Started")}
+                                                                baseColor='grey' stickColor='black' throttle={50}
+                                                                move={action("Moved")} stop={action("Stopped")}/>
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50}
+              move={action("Moved")} stop={action("Stopped")}/>
+</div>));
 
 joystickStories.add("HUGE joystick", () => <Joystick start={action("Started")} move={action("Moved")}
                                                      stop={action("Stopped")} size={500}/>);
