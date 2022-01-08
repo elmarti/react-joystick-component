@@ -156,7 +156,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @private
      */
     private _mouseDown(e: MouseEvent) {
-        if(this.props.disabled !== true){
+        if(this.props.disabled || this.props.followCursor){
+            return;
+        }
             this._parentRect = this._baseRef.current.getBoundingClientRect();
 
             this.setState({
@@ -179,7 +181,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                     direction: null
                 });
             }
-        }
+
     }
 
     /**
