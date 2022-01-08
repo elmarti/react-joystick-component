@@ -39,15 +39,26 @@ export interface IJoystickCoordinates {
     direction: JoystickDirection;
 }
 
+
+/**
+ * Radians identifying the direction of the joystick
+ */
+enum RadianQuadrantBinding {
+    TopRight = 2.35619449,
+    TopLeft = -2.35619449,
+    BottomRight  = 0.785398163,
+    BottomLeft = -0.785398163
+}
+
 class Joystick extends React.Component<IJoystickProps, IJoystickState> {
-    private _stickRef: React.RefObject<any>;
-    private _baseRef: React.RefObject<any>;
-    private _throttleMoveCallback: (data: any) => void;
-    private _boundMouseUp: EventListenerOrEventListenerObject;
+    private readonly _stickRef: React.RefObject<any>;
+    private readonly _baseRef: React.RefObject<any>;
+    private readonly _throttleMoveCallback: (data: any) => void;
+    private readonly _boundMouseUp: EventListenerOrEventListenerObject;
     private _baseSize: number;
     private _radius: number;
-    private _parentRect: ClientRect;
-    private _boundMouseMove: (event:any) => void;
+    private _parentRect: DOMRect;
+    private readonly _boundMouseMove: (event:any) => void;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -84,6 +95,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
+
+    /**
+     * Update position of joystick - set state and trigger DOM manipulation
+     * @param coordinates
+     * @private
+     */
     private _updatePos(coordinates: IJoystickCoordinates) {
         window.requestAnimationFrame(() => {
             this.setState({
@@ -99,7 +116,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
-    private _mouseDown(e: any) {
+    /**
+     * Handle mousedown event
+     * @param e MouseEvent
+     * @private
+     */
+    private _mouseDown(e: MouseEvent) {
         if(this.props.disabled !== true){
             this._parentRect = this._baseRef.current.getBoundingClientRect();
 
@@ -126,12 +148,18 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
     }
 
+    /**
+     * Use ArcTan2 (4 Quadrant inverse tangent) to identify the direction the joystick is pointing
+     * https://docs.oracle.com/cd/B12037_01/olap.101/b10339/x_arcsin003.htm
+     * @param atan2: number
+     * @private
+     */
     private _getDirection(atan2: number) : JoystickDirection {
-        if(atan2 > 2.35619449 || atan2 < -2.35619449){
+        if(atan2 > RadianQuadrantBinding.TopRight || atan2 < RadianQuadrantBinding.TopLeft){
             return "FORWARD";
-        } else if(atan2 < 2.35619449 && atan2 > 0.785398163) {
+        } else if(atan2 < RadianQuadrantBinding.TopRight && atan2 > RadianQuadrantBinding.BottomRight) {
             return "RIGHT"
-        } else if(atan2 < -0.785398163){
+        } else if(atan2 < RadianQuadrantBinding.BottomLeft){
             return "LEFT";
         }
         return "BACKWARD";
@@ -139,15 +167,26 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
-    private _distance(x: number, y: number,): number {
-        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    /**
+     * Hypotenuse distance calculation
+     * @param x: number
+     * @param y: number
+     * @private
+     */
+    private _distance(x: number, y: number): number {
+        return Math.hypot(x, y);
     }
 
-    private _mouseMove(event: any) {
+    /**
+     * Calculate X/Y and ArcTan within the bounds of the joystick
+     * @param event
+     * @private
+     */
+    private _mouseMove(event: MouseEvent|TouchEvent) {
         if (this.state.dragging) {
         let absoluteX = null;
         let absoluteY = null;
-        if(event.type === InteractionEvents.MouseMove){
+        if(event instanceof MouseEvent){
             absoluteX = event.clientX;
             absoluteY = event.clientY;
         } else {
@@ -175,6 +214,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
     }
 
+    /**
+     * Handle mouse up and de-register listen events
+     * @private
+     */
     private _mouseUp() {
         this.setState({
             dragging: false,
@@ -193,6 +236,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
 
     }
+
+    /**
+     * Calculate base styles for pad
+     * @private
+     */
     private _getBaseStyle(): any {
         const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
 
@@ -208,6 +256,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         };
 
     }
+
+    /**
+     * Calculate  base styles for joystick and translate
+     * @private
+     */
     private _getStickStyle(): any {
         const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
         const stickSize: string = `${this._baseSize / 1.5}px`;
@@ -243,7 +296,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                  style={baseStyle}>
                 <div ref={this._stickRef}
                     className={this.props.disabled ? 'joystick-disabled': ''}
-                     style={stickStyle}></div>
+                     style={stickStyle}/>
             </div>
         )
     }
