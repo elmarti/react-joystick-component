@@ -26,8 +26,8 @@ Component Props - as described by IJoystickProps
 | stickColor  |  string |  The color of the Stick |
 |  throttle | number  |  The [throttling](https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf) rate of the move callback |
 | sticky | Boolean | Should the joystick stay where it is when the interaction ends |
-| joystickImage | string | The image to be shown for the joystick |
-| padImage | string | The image to be shown for the pad |
+| stickImage | string | The image to be shown for the joystick |
+| baseImage | string | The image to be shown for the pad |
 |  move | Function  | Callback fired on every mouse move, not throttled unless a throttling rate is provided as above  |
 |  stop | Function  | Callback fired when the user releases the joystick  |
 | start  |  Function | Callback fired when the user starts moving the Joystick  |
@@ -41,8 +41,8 @@ interface IJoystickProps {
     disabled?: boolean;
     throttle?: number;
     sticky?: boolean;
-    joystickImage?: string;
-    padImage?: string;
+    stickImage?: string;
+    baseImage?: string;
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;

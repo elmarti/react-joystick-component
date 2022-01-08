@@ -10,8 +10,8 @@ export interface IJoystickProps {
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
-    joystickImage?: string;
-    padImage?: string;
+    stickImage?: string;
+    baseImage?: string;
     followCursor?: boolean;
 }
 enum InteractionEvents {
@@ -287,8 +287,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             justifyContent: 'center',
             alignItems: 'center'
         };
-        if(this.props.padImage){
-            padStyle['background'] = `url(${this.props.padImage})`;
+        if(this.props.baseImage){
+            padStyle['background'] = `url(${this.props.baseImage})`;
             padStyle['backgroundSize'] = '100%'
         }
         return padStyle;
@@ -312,8 +312,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             borderRadius: this._baseSize,
             flexShrink: 0
         };
-        if(this.props.joystickImage){
-            stickStyle['background'] = `url(${this.props.joystickImage})`;
+        if(this.props.stickImage){
+            stickStyle['background'] = `url(${this.props.stickImage})`;
             stickStyle['backgroundSize'] = '100%'
         }
 
