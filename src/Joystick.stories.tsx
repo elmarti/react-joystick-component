@@ -27,6 +27,10 @@ joystickStories.add("Sticky joystick", ()=> <Joystick sticky={true} start={actio
 
 joystickStories.add("Images", ()=> <Joystick padImage="http://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/fire.png" joystickImage="https://i.imgflip.com/1cf8by.jpg" start={action("Started")} throttle={50} move={action("Moved")} stop={action("Stopped")} />);
 
+joystickStories.add("Follow Cursor", ()=> (<div style={{padding:"50px", display:'flex'}}>
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50} move={action("Moved")} stop={action("Stopped")} />
+    <Joystick followCursor={true} start={action("Started")} baseColor='grey' stickColor='black' throttle={50} move={action("Moved")} stop={action("Stopped")} />
+</div>));
 
 joystickStories.add("HUGE joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={500}/>);
 joystickStories.add("Tiny joystick", ()=> <Joystick start={action("Started")}move={action("Moved")} stop={action("Stopped")}  size={50}/>);

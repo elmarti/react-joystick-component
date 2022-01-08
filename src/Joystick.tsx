@@ -12,6 +12,7 @@ export interface IJoystickProps {
     start?: (event: IJoystickUpdateEvent) => void;
     joystickImage?: string;
     padImage?: string;
+    followCursor?: boolean;
 }
 enum InteractionEvents {
     MouseDown = "mousedown",
@@ -98,6 +99,29 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     }
 
+    componentDidMount() {
+        if(this.props.followCursor){
+                this._parentRect = this._baseRef.current.getBoundingClientRect();
+
+                this.setState({
+                    dragging: true
+                });
+
+                    window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
+                    window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+
+
+                if (this.props.start) {
+                    this.props.start({
+                        type: "start",
+                        x: null,
+                        y: null,
+                        direction: null
+                    });
+                }
+
+        }
+    }
 
     /**
      * Update position of joystick - set state and trigger DOM manipulation
@@ -131,7 +155,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.setState({
                 dragging: true
             });
-            
+
             if(e.type === InteractionEvents.MouseDown){
                 window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
                 window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
