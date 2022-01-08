@@ -260,7 +260,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _mouseUp() {
         const stateUpdate = {
             dragging: false,
-        };
+        } as any;
         if (!this.props.sticky) {
             stateUpdate.coordinates = undefined;
         }
@@ -298,7 +298,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
-        };
+        } as any;
         if (this.props.baseImage) {
             padStyle.background = `url(${this.props.baseImage})`;
             padStyle.backgroundSize = '100%'
@@ -323,7 +323,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             border: 'none',
             borderRadius: this._baseSize,
             flexShrink: 0
-        };
+        } as any;
         if (this.props.stickImage) {
             stickStyle.background = `url(${this.props.stickImage})`;
             stickStyle.backgroundSize = '100%'
