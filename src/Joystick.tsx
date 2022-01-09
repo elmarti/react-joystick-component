@@ -1,4 +1,7 @@
 import * as React from 'react';
+import {JoystickShape} from "./enums/shape.enum";
+import {shapeFactory} from "./shapes/shape.factory";
+import {shapeBoundsFactory} from "./shapes/shape.bounds.factory";
 
 export interface IJoystickProps {
     size?: number;
@@ -13,6 +16,9 @@ export interface IJoystickProps {
     stickImage?: string;
     baseImage?: string;
     followCursor?: boolean;
+    baseShape?: JoystickShape;
+    stickShape?: JoystickShape;
+    controlPlaneShape?: JoystickShape;
 }
 
 enum InteractionEvents {
@@ -237,10 +243,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             let relativeX = absoluteX - this._parentRect.left - this._radius;
             let relativeY = absoluteY - this._parentRect.top - this._radius;
             const dist = this._distance(relativeX, relativeY);
-            if (dist > this._radius) {
-                relativeX *= this._radius / dist;
-                relativeY *= this._radius / dist;
-            }
+            //@ts-ignore
+            const bounded = shapeBoundsFactory(this.props.controlPlaneShape || this.props.baseShape, absoluteX, absoluteY, relativeX, relativeY, dist, this._radius, this._baseSize, this._parentRect);
+            relativeX = bounded.relativeX
+            relativeY = bounded.relativeY
             const atan2 = Math.atan2(relativeX, relativeY);
 
             this._updatePos({
@@ -252,6 +258,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             });
         }
     }
+
+
 
     /**
      * Handle mouse up and de-register listen events
@@ -285,6 +293,22 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     /**
+     * Get the shape stylings for the base
+     * @private
+     */
+    private getBaseShapeStyle() {
+        const shape = this.props.baseShape || JoystickShape.Circle;
+        return shapeFactory(shape, this._baseSize);
+    }
+    /**
+     * Get the shape stylings for the stick
+     * @private
+     */
+    private getStickShapeStyle() {
+        const shape = this.props.stickShape || JoystickShape.Circle;
+        return shapeFactory(shape, this._baseSize);
+    }
+    /**
      * Calculate base styles for pad
      * @private
      */
@@ -293,10 +317,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
         const baseSizeString = `${this._baseSize}px`;
         const padStyle = {
+            ...this.getBaseShapeStyle(),
             height: baseSizeString,
             width: baseSizeString,
             background: baseColor,
-            borderRadius: this._baseSize,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
@@ -318,12 +342,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         const stickSize = `${this._baseSize / 1.5}px`;
 
         let stickStyle = {
+            ...this.getStickShapeStyle(),
             background: stickColor,
             cursor: "move",
             height: stickSize,
             width: stickSize,
             border: 'none',
-            borderRadius: this._baseSize,
             flexShrink: 0
         } as any;
         if (this.props.stickImage) {

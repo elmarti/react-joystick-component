@@ -19,6 +19,10 @@ import { Joystick } from 'react-joystick-component';
 <Joystick size={100} sticky={true} baseColor="red" stickColor="blue" move={handleMove} stop={handleStop}></Joystick>
 ```
 
+### Migrating from V1
+The main breaking change is that the control plane is no longer square by default - if you require a square control plane on a circular joystick, you can set `controlPlaneShape='square'` which will give you the original behaviour.
+
+
 Component Props - as described by IJoystickProps
 
 | Prop  | Type  | Description  |
@@ -35,8 +39,12 @@ Component Props - as described by IJoystickProps
 |  stop | Function  | Callback fired when the user releases the joystick  |
 | start  |  Function | Callback fired when the user starts moving the Joystick  |
 | disabled | Boolean | When true, block any usage of the Joystick. This will also apply the `joystick-disabled` and `joystick-base-disabled` classNames  |
+| stickShape | JoystickShape | The shape of the joystick default = circle|
+| baseShape | JoystickShape | The shape of the joystick default = circle|
+| controlPlaneShape | JoystickShape | Override the default shape behaviour of the control plane|
 
 ```TypeScript
+import {JoystickShape} from "./shape.enum"; 
 interface IJoystickProps {
     size?: number;
     baseColor?: string;
@@ -50,6 +58,10 @@ interface IJoystickProps {
     move?: (event: IJoystickUpdateEvent) => void;
     stop?: (event: IJoystickUpdateEvent) => void;
     start?: (event: IJoystickUpdateEvent) => void;
+    baseShape?: JoystickShape;
+    stickShape?: JoystickShape;
+    controlPlaneShape?: JoystickShape;
+
 }
 ```
 

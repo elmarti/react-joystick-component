@@ -4,6 +4,7 @@ import {storiesOf} from "@storybook/react";
 import {action} from '@storybook/addon-actions';
 
 import {Joystick} from "./Joystick";
+import {JoystickShape} from "./enums/shape.enum";
 
 const joystickStories = storiesOf('Joystick Examples', module);
 
@@ -11,6 +12,11 @@ const joystickStories = storiesOf('Joystick Examples', module);
 joystickStories.add("Default joystick", () => <Joystick start={action("Started")} move={action("Moved")}
                                                         stop={action("Stopped")}/>);
 
+joystickStories.add("Control plane override", () => <Joystick start={action("Started")} controlPlaneShape={JoystickShape.Square} move={action("Moved")}
+                                                        stop={action("Stopped")}/>);
+joystickStories.add("Square joystick", () => <div style={{display:'flex', justifyContent:'space-around', padding:'25px'}}><Joystick throttle={100} start={action("Started")} baseShape={JoystickShape.Square} stickShape={JoystickShape.Square} move={action("Moved")}
+                                                        stop={action("Stopped")}/><Joystick throttle={100} start={action("Started")} baseShape={JoystickShape.Square}  move={action("Moved")}
+                                                                                            stop={action("Stopped")}/></div>);
 
 joystickStories.add("Yellow (custom colors) joystick",
     () => <Joystick

@@ -22,5 +22,5 @@
     "experimentalDecorators": true
   },
   "include": ["src/**/*", "types/**/*"],
-  "exclude": ["node_modules", "build", "scripts"]
+  "exclude": ["node_modules", "build", "scripts", "src/joystick.stories.tsx"]
 }
