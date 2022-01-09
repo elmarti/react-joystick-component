@@ -264,7 +264,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (!this.props.sticky) {
             stateUpdate.coordinates = undefined;
         }
-        this.setState(stateUpdate);
+        window.requestAnimationFrame(() => {
+            this.setState(stateUpdate);
+        });
         window.removeEventListener("mouseup", this._boundMouseUp);
         window.removeEventListener("mousemove", this._boundMouseMove);
 
