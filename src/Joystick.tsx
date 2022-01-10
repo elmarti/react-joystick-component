@@ -19,6 +19,7 @@ export interface IJoystickProps {
     baseShape?: JoystickShape;
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
+    minDistance?: number;
 }
 
 enum InteractionEvents {
@@ -149,11 +150,17 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @private
      */
     private _updatePos(coordinates: IJoystickCoordinates) {
+
         window.requestAnimationFrame(() => {
             this.setState({
                 coordinates
             });
         });
+        if(typeof this.props.minDistance ===  'number'){
+            if(coordinates.distance < this.props.minDistance){
+                return;
+            }
+        }
         this._throttleMoveCallback({
             type: "move",
             x: coordinates.relativeX,

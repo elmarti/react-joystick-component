@@ -11,7 +11,8 @@ const joystickStories = storiesOf('Joystick Examples', module);
 
 joystickStories.add("Default joystick", () => <Joystick start={action("Started")} move={action("Moved")}
                                                         stop={action("Stopped")}/>);
-
+joystickStories.add("Default joystick with 50% minDistance", () => <Joystick minDistance={50} start={action("Started")} move={action("Moved")}
+                                                        stop={action("Stopped")}/>);
 joystickStories.add("Control plane override", () => <Joystick start={action("Started")} controlPlaneShape={JoystickShape.Square} move={action("Moved")}
                                                         stop={action("Stopped")}/>);
 joystickStories.add("Square joystick", () => <div style={{display:'flex', justifyContent:'space-around', padding:'25px'}}><Joystick throttle={100} start={action("Started")} baseShape={JoystickShape.Square} stickShape={JoystickShape.Square} move={action("Moved")}

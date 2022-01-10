@@ -23,7 +23,7 @@ import { Joystick } from 'react-joystick-component';
 The main breaking change is that the control plane is no longer square by default - if you require a square control plane on a circular joystick, you can set `controlPlaneShape='square'` which will give you the original behaviour.
 
 
-Component Props - as described by IJoystickProps
+Component Props - as described by IJoystickProps - all are optional
 
 | Prop  | Type  | Description  |
 |---|---|---|
@@ -42,6 +42,7 @@ Component Props - as described by IJoystickProps
 | stickShape | JoystickShape | The shape of the joystick default = circle|
 | baseShape | JoystickShape | The shape of the joystick default = circle|
 | controlPlaneShape | JoystickShape | Override the default shape behaviour of the control plane|
+| minDistance | number | Percentage 0-100 - the minimum distance to start receive IJoystickMove events|
 
 ```TypeScript
 import {JoystickShape} from "./shape.enum"; 
@@ -61,7 +62,7 @@ interface IJoystickProps {
     baseShape?: JoystickShape;
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
-
+    minDistance?: number;
 }
 ```
 
