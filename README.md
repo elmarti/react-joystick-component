@@ -73,5 +73,6 @@ export interface IJoystickUpdateEvent {
     x: number | null;
     y: number | null;
     direction: JoystickDirection | null;
+    distance: number; // Percentile 0-100% of joystick
 }
 ```

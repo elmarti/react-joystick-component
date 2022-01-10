@@ -32,9 +32,11 @@ enum InteractionEvents {
 
 export interface IJoystickUpdateEvent {
     type: "move" | "stop" | "start";
+    //TODO: these could just be optional, but this may be a breaking change
     x: number | null;
     y: number | null;
     direction: JoystickDirection | null;
+    distance: number | null;
 }
 
 export interface IJoystickState {
@@ -50,6 +52,7 @@ export interface IJoystickCoordinates {
     axisX: number;
     axisY: number;
     direction: JoystickDirection;
+    distance: number;
 }
 
 
@@ -132,6 +135,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                     type: "start",
                     x: null,
                     y: null,
+                    distance: null,
                     direction: null
                 });
             }
@@ -154,7 +158,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             type: "move",
             x: coordinates.relativeX,
             y: -coordinates.relativeY,
-            direction: coordinates.direction
+            direction: coordinates.direction,
+            distance: coordinates.distance
         });
 
     }
@@ -187,6 +192,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 type: "start",
                 x: null,
                 y: null,
+                distance: null,
                 direction: null
             });
         }
@@ -221,6 +227,13 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _distance(x: number, y: number): number {
         return Math.hypot(x, y);
     }
+    private _distanceToPercentile(distance:number): number {
+        const percentageBaseSize = distance / (this._baseSize/2) * 100;
+        if(percentageBaseSize > 100){
+            return 100;
+        }
+        return percentageBaseSize;
+    }
 
     /**
      * Calculate X/Y and ArcTan within the bounds of the joystick
@@ -252,6 +265,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this._updatePos({
                 relativeX,
                 relativeY,
+                distance: this._distanceToPercentile(dist),
                 direction: this._getDirection(atan2),
                 axisX: absoluteX - this._parentRect.left,
                 axisY: absoluteY - this._parentRect.top
@@ -286,7 +300,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 // @ts-ignore
                 y: this.props.sticky ? this.state.coordinates.relativeY : null,
                 // @ts-ignore
-                direction: this.props.sticky ? this.state.coordinates.direction : null
+                direction: this.props.sticky ? this.state.coordinates.direction : null,
+                // @ts-ignore
+                distance: this.props.sticky ? this.state.coordinates.distance : null
+
             });
         }
 
