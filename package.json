@@ -44,6 +44,7 @@
     "react": "17.0.2",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "react-dom": "17.0.2",
+    "react-parallax-tilt": "^1.5.85",
     "semantic-release-gitmoji": "^1.4.2",
     "storybook-addon-jsx": "^7.3.14",
     "ts-jest": "^27.1.2",
