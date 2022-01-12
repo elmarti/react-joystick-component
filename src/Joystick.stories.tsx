@@ -4,7 +4,7 @@ import {storiesOf} from "@storybook/react";
 import {action} from '@storybook/addon-actions';
 import Tilt from 'react-parallax-tilt';
 
-import {Joystick} from "./Joystick";
+import {IJoystickUpdateEvent, Joystick} from "./Joystick";
 import {JoystickShape} from "./enums/shape.enum";
 import {useState} from "react";
 import './stories.css';
@@ -102,9 +102,9 @@ joystickStories.add("Disabled joystick", () => <Joystick start={action("Started"
 
 
 joystickStories.add("Controlling a react-parallax-tilt ", () => {
-    const [[manualTiltAngleX, manualTiltAngleY], setManualTiltAngle] = useState([0, 0]);
+    const [[manualTiltAngleX, manualTiltAngleY], setManualTiltAngle] = useState([0, 0] as Array<number|null>);
 
-    const onMove = (stick) => {
+    const onMove = (stick:IJoystickUpdateEvent) => {
         setManualTiltAngle([stick.y, stick.x]);
     };
 
@@ -115,8 +115,8 @@ joystickStories.add("Controlling a react-parallax-tilt ", () => {
         <div className="tilt-manual-input">
             <Tilt tiltAngleXManual={manualTiltAngleX} tiltAngleYManual={manualTiltAngleY} glareEnable={true}>
                 <div className="react-parallax-tilt">
-                    <div>Axis x: {manualTiltAngleX.toFixed(0)}°</div>
-                    <div>Axis y: {manualTiltAngleY.toFixed(0)}°</div>
+                    <div>Axis x: {manualTiltAngleX?.toFixed(0)}°</div>
+                    <div>Axis y: {manualTiltAngleY?.toFixed(0)}°</div>
                 </div>
             </Tilt>
             <div className="manual-input">
