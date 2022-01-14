@@ -76,6 +76,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _radius: number;
     private _parentRect: DOMRect;
     private readonly _boundMouseMove: (event: any) => void;
+    private _touchIdentifier: number|null = null
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -102,8 +103,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             };
         })();
 
-        this._boundMouseUp = () => {
-            this._mouseUp();
+        this._boundMouseUp = (event: any) => {
+            this._mouseUp(event);
         };
         this._boundMouseMove = (event: any) => {
             this._mouseMove(event);
@@ -176,7 +177,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param e MouseEvent
      * @private
      */
-    private _mouseDown(e: MouseEvent) {
+    private _mouseDown(e: MouseEvent| any) {
+        e.preventDefault();
         if (this.props.disabled || this.props.followCursor) {
             return;
         }
@@ -190,6 +192,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
             window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
         } else {
+            this._touchIdentifier = e.targetTouches[0].identifier;
             window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
             window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
         }
@@ -247,16 +250,21 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param event
      * @private
      */
-    private _mouseMove(event: MouseEvent | TouchEvent) {
+    private _mouseMove(event: MouseEvent | any) {
+        event.preventDefault();
         if (this.state.dragging) {
+            if(event.targetTouches && event.targetTouches[0].identifier !== this._touchIdentifier){
+                return;
+            }
+
             let absoluteX = null;
             let absoluteY = null;
             if (event instanceof MouseEvent) {
                 absoluteX = event.clientX;
                 absoluteY = event.clientY;
             } else {
-                absoluteX = event.touches[0].clientX;
-                absoluteY = event.touches[0].clientY;
+                absoluteX = event.targetTouches[0].clientX;
+                absoluteY = event.targetTouches[0].clientY;
             }
 
 
@@ -286,7 +294,15 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * Handle mouse up and de-register listen events
      * @private
      */
-    private _mouseUp() {
+    private _mouseUp(event: any) {
+        if(event.touches){
+            for(const touch of event.touches){
+                // this touch id is still in the TouchList, so this mouse up should be ignored
+                if(touch.identifier === this._touchIdentifier){
+                    return;
+                }
+            }
+        }
         const stateUpdate = {
             dragging: false,
         } as any;
