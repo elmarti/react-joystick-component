@@ -1,6 +1,6 @@
 ## React Joystick Component
 
-[![Build Status](https://travis-ci.org/elmarti/react-joystick-component.svg?branch=master)](https://travis-ci.org/elmarti/react-joystick-component)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-joystick-component?style=plastic)](https://img.shields.io/bundlephobia/minzip/react-joystick-component?style=plastic)
 
 [Click here to see examples](https://elmarti.github.io/react-joystick-component/)
 
