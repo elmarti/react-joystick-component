@@ -162,7 +162,7 @@ class DirectionComponent extends React.Component<any, IDirectionComponentState> 
 
 joystickStories.add("Default with direction text", () => <DirectionComponent/>)
 
-const Modal =({  isOpen})=> {
+const Modal =({  isOpen}: {isOpen:boolean})=> {
     if (!isOpen) return null
     return ReactDOM.createPortal(
             <Joystick />
@@ -172,7 +172,7 @@ const Modal =({  isOpen})=> {
 
 
 joystickStories.add("Default with portal", () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false) as any;
     return <>
         <button onClick={()=> setIsOpen(!isOpen)}>Open</button>
         <Modal isOpen={isOpen}></Modal></>
