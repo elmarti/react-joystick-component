@@ -32,6 +32,7 @@
     "@storybook/storybook-deployer": "^2.8.10",
     "@types/jest": "^27.4.0",
     "@types/react": "17.0.38",
+    "@types/react-dom": "^17.0.11",
     "@types/storybook__addon-actions": "^5.2.1",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",

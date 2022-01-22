@@ -1,5 +1,4 @@
 import * as React from "react";
-//@tsignore
 import * as ReactDOM from "react-dom";
 import {storiesOf} from "@storybook/react";
 import {action} from '@storybook/addon-actions';
