@@ -106,7 +106,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     componentDidMount() {
         if (this.props.followCursor) {
-            this._parentRect = this._baseRef.current?.getBoundingClientRect();
+            //@ts-ignore
+            this._parentRect = this._baseRef.current.getBoundingClientRect();
 
             this.setState({
                 dragging: true
@@ -163,7 +164,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (this.props.disabled || this.props.followCursor) {
             return;
         }
-
+        //@ts-ignore
         this._parentRect = this._baseRef.current.getBoundingClientRect();
 
         this.setState({
@@ -173,6 +174,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         window.addEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
         window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
         this._pointerId = e.pointerId
+        //@ts-ignore
         this._stickRef.current.setPointerCapture(e.pointerId);
 
         if (this.props.start) {
@@ -239,6 +241,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             const dist = this._distance(relativeX, relativeY);
             // @ts-ignore
             const bounded = shapeBoundsFactory(
+                //@ts-ignore
                 this.props.controlPlaneShape || this.props.baseShape,
                 absoluteX,
                 absoluteY,
@@ -379,6 +382,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         this._radius = this._baseSize / 2;
         const baseStyle = this._getBaseStyle();
         const stickStyle = this._getStickStyle();
+        //@ts-ignore
         return (
             <div className={this.props.disabled ? 'joystick-base-disabled' : ''}
 
@@ -386,7 +390,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                  style={baseStyle}>
                 <button ref={this._stickRef}
                         disabled={this.props.disabled}
-                        onPointerDown={(event) => this._pointerDown(event)}
+                        onPointerDown={(event: any) => this._pointerDown(event)}
                         className={this.props.disabled ? 'joystick-disabled' : ''}
                         style={stickStyle}/>
             </div>
