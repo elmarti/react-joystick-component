@@ -23,17 +23,14 @@ export interface IJoystickProps {
 }
 
 enum InteractionEvents {
-    MouseDown = "mousedown",
-    MouseMove = "mousemove",
-    MouseUp = "mouseup",
-    TouchStart = "touchstart",
-    TouchMove = "touchmove",
-    TouchEnd = "touchend"
+    PointerDown = "pointerdown",
+    PointerMove = "pointermove",
+    PointerUp = "pointerup"
 }
 
 export interface IJoystickUpdateEvent {
     type: "move" | "stop" | "start";
-    //TODO: these could just be optional, but this may be a breaking change
+    // TODO: these could just be optional, but this may be a breaking change
     x: number | null;
     y: number | null;
     direction: JoystickDirection | null;
@@ -68,28 +65,22 @@ enum RadianQuadrantBinding {
 }
 
 class Joystick extends React.Component<IJoystickProps, IJoystickState> {
-    private readonly _stickRef: React.RefObject<any>;
-    private readonly _baseRef: React.RefObject<any>;
-    private readonly _throttleMoveCallback: (data: any) => void;
-    private readonly _boundMouseUp: EventListenerOrEventListenerObject;
+    private readonly _stickRef: React.RefObject<HTMLButtonElement> = React.createRef();
+    private readonly _baseRef: React.RefObject<HTMLDivElement> = React.createRef();
+    private readonly _throttleMoveCallback: (data: IJoystickUpdateEvent) => void;
     private _baseSize: number;
     private _radius: number;
     private _parentRect: DOMRect;
-    private readonly _boundMouseMove: (event: any) => void;
-    private _touchIdentifier: number|null = null
+    private _pointerId: number|null = null
 
     constructor(props: IJoystickProps) {
         super(props);
         this.state = {
             dragging: false
         };
-        this._stickRef = React.createRef();
-        this._baseRef = React.createRef();
-
-
         this._throttleMoveCallback = (() => {
             let lastCall = 0;
-            return (event: any) => {
+            return (event: IJoystickUpdateEvent) => {
 
                 const now = new Date().getTime();
                 const throttleAmount = this.props.throttle || 0;
@@ -103,34 +94,25 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             };
         })();
 
-        this._boundMouseUp = (event: any) => {
-            this._mouseUp(event);
-        };
-        this._boundMouseMove = (event: any) => {
-            this._mouseMove(event);
-        }
 
 
     }
 
     componentWillUnmount() {
         if (this.props.followCursor) {
-            window.removeEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-            window.removeEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
+            window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
         }
     }
 
     componentDidMount() {
         if (this.props.followCursor) {
-            this._parentRect = this._baseRef.current.getBoundingClientRect();
+            this._parentRect = this._baseRef.current?.getBoundingClientRect();
 
             this.setState({
                 dragging: true
             });
 
-            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-
+            window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
 
             if (this.props.start) {
                 this.props.start({
@@ -173,29 +155,25 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     /**
-     * Handle mousedown event
-     * @param e MouseEvent
+     * Handle pointerdown event
+     * @param e PointerEvent
      * @private
      */
-    private _mouseDown(e: MouseEvent| any) {
-        e.preventDefault();
+    private _pointerDown(e: PointerEvent) {
         if (this.props.disabled || this.props.followCursor) {
             return;
         }
+
         this._parentRect = this._baseRef.current.getBoundingClientRect();
 
         this.setState({
             dragging: true
         });
 
-        if (e.type === InteractionEvents.MouseDown) {
-            window.addEventListener(InteractionEvents.MouseUp, this._boundMouseUp);
-            window.addEventListener(InteractionEvents.MouseMove, this._boundMouseMove);
-        } else {
-            this._touchIdentifier = e.targetTouches[0].identifier;
-            window.addEventListener(InteractionEvents.TouchEnd, this._boundMouseUp);
-            window.addEventListener(InteractionEvents.TouchMove, this._boundMouseMove);
-        }
+        window.addEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
+        window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+        this._pointerId = e.pointerId
+        this._stickRef.current.setPointerCapture(e.pointerId);
 
         if (this.props.start) {
             this.props.start({
@@ -250,29 +228,26 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param event
      * @private
      */
-    private _mouseMove(event: MouseEvent | any) {
-        event.preventDefault();
+    private _pointerMove(event: PointerEvent) {
+        event.preventDefault()
         if (this.state.dragging) {
-            if(event.targetTouches && event.targetTouches[0].identifier !== this._touchIdentifier){
-                return;
-            }
-
-            let absoluteX = null;
-            let absoluteY = null;
-            if (event instanceof MouseEvent) {
-                absoluteX = event.clientX;
-                absoluteY = event.clientY;
-            } else {
-                absoluteX = event.targetTouches[0].clientX;
-                absoluteY = event.targetTouches[0].clientY;
-            }
-
-
+            if(!this.props.followCursor && event.pointerId !== this._pointerId) return;
+            const absoluteX = event.clientX;
+            const absoluteY = event.clientY;
             let relativeX = absoluteX - this._parentRect.left - this._radius;
             let relativeY = absoluteY - this._parentRect.top - this._radius;
             const dist = this._distance(relativeX, relativeY);
-            //@ts-ignore
-            const bounded = shapeBoundsFactory(this.props.controlPlaneShape || this.props.baseShape, absoluteX, absoluteY, relativeX, relativeY, dist, this._radius, this._baseSize, this._parentRect);
+            // @ts-ignore
+            const bounded = shapeBoundsFactory(
+                this.props.controlPlaneShape || this.props.baseShape,
+                absoluteX,
+                absoluteY,
+                relativeX,
+                relativeY,
+                dist,
+                this._radius,
+                this._baseSize,
+                this._parentRect);
             relativeX = bounded.relativeX
             relativeY = bounded.relativeY
             const atan2 = Math.atan2(relativeX, relativeY);
@@ -291,18 +266,11 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
 
     /**
-     * Handle mouse up and de-register listen events
+     * Handle pointer up and de-register listen events
      * @private
      */
-    private _mouseUp(event: any) {
-        if(event.touches){
-            for(const touch of event.touches){
-                // this touch id is still in the TouchList, so this mouse up should be ignored
-                if(touch.identifier === this._touchIdentifier){
-                    return;
-                }
-            }
-        }
+    private _pointerUp(event: PointerEvent) {
+        if(event.pointerId !== this._pointerId) return;
         const stateUpdate = {
             dragging: false,
         } as any;
@@ -312,9 +280,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         window.requestAnimationFrame(() => {
             this.setState(stateUpdate);
         });
-        window.removeEventListener("mouseup", this._boundMouseUp);
-        window.removeEventListener("mousemove", this._boundMouseMove);
-
+        window.removeEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
+        window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+        this._pointerId = null;
         if (this.props.stop) {
             this.props.stop({
                 type: "stop",
@@ -363,7 +331,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             background: baseColor,
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
         } as any;
         if (this.props.baseImage) {
             padStyle.background = `url(${this.props.baseImage})`;
@@ -388,7 +356,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             height: stickSize,
             width: stickSize,
             border: 'none',
-            flexShrink: 0
+            flexShrink: 0,
+            touchAction: 'none'
         } as any;
         if (this.props.stickImage) {
             stickStyle.background = `url(${this.props.stickImage})`;
@@ -412,12 +381,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         const stickStyle = this._getStickStyle();
         return (
             <div className={this.props.disabled ? 'joystick-base-disabled' : ''}
-                 onMouseDown={this._mouseDown.bind(this)}
-                 onTouchStart={this._mouseDown.bind(this)}
 
                  ref={this._baseRef}
                  style={baseStyle}>
                 <button ref={this._stickRef}
+                        disabled={this.props.disabled}
+                        onPointerDown={(event) => this._pointerDown(event)}
                         className={this.props.disabled ? 'joystick-disabled' : ''}
                         style={stickStyle}/>
             </div>

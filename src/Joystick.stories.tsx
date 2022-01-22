@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import * as ReactDOM from "react-dom";
 import {storiesOf} from "@storybook/react";
 import {action} from '@storybook/addon-actions';
 import Tilt from 'react-parallax-tilt';
@@ -161,3 +161,19 @@ class DirectionComponent extends React.Component<any, IDirectionComponentState> 
 }
 
 joystickStories.add("Default with direction text", () => <DirectionComponent/>)
+
+const Modal =({  isOpen})=> {
+    if (!isOpen) return null
+    return ReactDOM.createPortal(
+            <Joystick />
+            ,
+        document.body)
+}
+
+
+joystickStories.add("Default with portal", () => {
+    const [isOpen, setIsOpen] = useState(false);
+    return <>
+        <button onClick={()=> setIsOpen(!isOpen)}>Open</button>
+        <Modal isOpen={isOpen}></Modal></>
+})
