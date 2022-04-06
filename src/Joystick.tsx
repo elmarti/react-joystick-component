@@ -147,8 +147,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
         this._throttleMoveCallback({
             type: "move",
-            x: coordinates.relativeX,
-            y: -coordinates.relativeY,
+            x: ((coordinates.relativeX * 2) / this.props.size),
+            y: ((-coordinates.relativeY*2) / this.props.size),
             direction: coordinates.direction,
             distance: coordinates.distance
         });
