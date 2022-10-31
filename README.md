@@ -49,6 +49,7 @@ Component Props - as described by IJoystickProps - all are optional
 import {JoystickShape} from "./shape.enum"; 
 interface IJoystickProps {
     size?: number;
+    stickSize?: number;
     baseColor?: string;
     stickColor?: string;
     disabled?: boolean;
