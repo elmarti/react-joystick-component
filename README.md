@@ -28,6 +28,7 @@ Component Props - as described by IJoystickProps - all are optional
 | Prop  | Type  | Description  |
 |---|---|---|
 | size  |  number |  The size in px of the Joystick base  |
+| stickSize  |  number |  The size in px of the Joystick stick (if unspecified, joystick size is relative to the `size` value |
 |  baseColor |  string |  The color of the Joystick base |
 | stickColor  |  string |  The color of the Stick |
 |  throttle | number  |  The [throttling](https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf) rate of the move callback |
