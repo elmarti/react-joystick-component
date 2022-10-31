@@ -70,7 +70,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private readonly _baseRef: React.RefObject<HTMLDivElement> = React.createRef();
     private readonly _throttleMoveCallback: (data: IJoystickUpdateEvent) => void;
     private _baseSize: number;
-    private _stickSize: number;
+    private _stickSize?: number;
 
     private _radius: number;
     private _parentRect: DOMRect;
