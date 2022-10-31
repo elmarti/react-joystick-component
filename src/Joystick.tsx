@@ -5,6 +5,7 @@ import {shapeBoundsFactory} from "./shapes/shape.bounds.factory";
 
 export interface IJoystickProps {
     size?: number;
+    stickSize?: number;
     baseColor?: string;
     stickColor?: string;
     throttle?: number;
@@ -69,6 +70,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private readonly _baseRef: React.RefObject<HTMLDivElement> = React.createRef();
     private readonly _throttleMoveCallback: (data: IJoystickUpdateEvent) => void;
     private _baseSize: number;
+    private _stickSize: number;
+
     private _radius: number;
     private _parentRect: DOMRect;
     private _pointerId: number|null = null
@@ -350,7 +353,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      */
     private _getStickStyle(): any {
         const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
-        const stickSize = `${this._baseSize / 1.5}px`;
+        const stickSize = this._stickSize ? `${this._stickSize}px` :`${this._baseSize / 1.5}px`;
 
         let stickStyle = {
             ...this.getStickShapeStyle(),
@@ -379,6 +382,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     render() {
         this._baseSize = this.props.size || 100;
+        this._stickSize = this.props.stickSize;
         this._radius = this._baseSize / 2;
         const baseStyle = this._getBaseStyle();
         const stickStyle = this._getStickStyle();
