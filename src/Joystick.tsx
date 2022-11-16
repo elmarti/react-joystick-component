@@ -1,7 +1,9 @@
 import * as React from 'react';
 import {JoystickShape} from "./enums/shape.enum";
-import {shapeFactory} from "./shapes/shape.factory";
 import {shapeBoundsFactory} from "./shapes/shape.bounds.factory";
+import { useBaseStyle } from './hooks/use-base-style';
+import {useEffect, useRef, useState} from "react";
+import {useStickStyle} from "./hooks/use-stick-style";
 
 export interface IJoystickProps {
     size?: number;
@@ -65,61 +67,139 @@ enum RadianQuadrantBinding {
     BottomLeft = -0.785398163
 }
 
-class Joystick extends React.Component<IJoystickProps, IJoystickState> {
-    private readonly _stickRef: React.RefObject<HTMLButtonElement> = React.createRef();
-    private readonly _baseRef: React.RefObject<HTMLDivElement> = React.createRef();
-    private readonly _throttleMoveCallback: (data: IJoystickUpdateEvent) => void;
-    private _baseSize: number;
-    private _stickSize?: number;
 
-    private _radius: number;
-    private _parentRect: DOMRect;
-    private _pointerId: number|null = null
 
-    constructor(props: IJoystickProps) {
-        super(props);
-        this.state = {
-            dragging: false
+const distance = (x: number, y: number) =>  Math.hypot(x, y);
+const distanceToPercentile = (distance:number, baseSize: number): number =>  {
+    const percentageBaseSize = distance / (baseSize/2) * 100;
+    if(percentageBaseSize > 100){
+        return 100;
+    }
+    return percentageBaseSize;
+}
+const getDirection = (atan2: number): JoystickDirection => {
+    if (atan2 > RadianQuadrantBinding.TopRight || atan2 < RadianQuadrantBinding.TopLeft) {
+        return "FORWARD";
+    } else if (atan2 < RadianQuadrantBinding.TopRight && atan2 > RadianQuadrantBinding.BottomRight) {
+        return "RIGHT"
+    } else if (atan2 < RadianQuadrantBinding.BottomLeft) {
+        return "LEFT";
+    }
+    return "BACKWARD";
+
+
+}
+
+let parentRect: any = null;
+
+export function Joystick ({
+    size,
+    stickSize,
+    baseColor,
+    stickColor,
+    throttle,
+    disabled,
+    sticky,
+    move,
+    stop,
+    start,
+    stickImage,
+    baseImage,
+    followCursor,
+    baseShape,
+    stickShape,
+    controlPlaneShape,
+    minDistance,
+}: IJoystickProps) {
+    const baseSize = size || 100;
+    const radius = baseSize / 2;
+    const [dragging, setDragging] = useState<boolean>(false);
+    const [coordinates, setCoordinates] = useState<IJoystickCoordinates | null>(null);
+    const [pointerId, setPointerId] = useState<number | null>(null);
+    const baseRef = useRef<HTMLDivElement>(null);
+    const stickRef = useRef<HTMLButtonElement>(null);
+    const throttleMoveCallback = (() => {
+        let lastCall = 0;
+        return (event: IJoystickUpdateEvent) => {
+
+            const now = new Date().getTime();
+            const throttleAmount = throttle || 0;
+            if (now - lastCall < throttleAmount) {
+                return;
+            }
+            lastCall = now;
+            if (move) {
+                return move(event);
+            }
         };
-        this._throttleMoveCallback = (() => {
-            let lastCall = 0;
-            return (event: IJoystickUpdateEvent) => {
-
-                const now = new Date().getTime();
-                const throttleAmount = this.props.throttle || 0;
-                if (now - lastCall < throttleAmount) {
-                    return;
-                }
-                lastCall = now;
-                if (this.props.move) {
-                    return this.props.move(event);
-                }
-            };
-        })();
-
-
-
-    }
-
-    componentWillUnmount() {
-        if (this.props.followCursor) {
-            window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+    })();
+    const updatePos = (newCoordinates: IJoystickCoordinates) => {
+        window.requestAnimationFrame(() => {
+            setCoordinates(newCoordinates);
+        });
+        if(typeof minDistance ===  'number'){
+            if(newCoordinates.distance < minDistance){
+                return;
+            }
         }
-    }
+        throttleMoveCallback({
+            type: "move",
+            x: newCoordinates.relativeX,
+            y: -newCoordinates.relativeY,
+            direction: newCoordinates.direction,
+            distance: newCoordinates.distance
+        });
 
-    componentDidMount() {
-        if (this.props.followCursor) {
-            //@ts-ignore
-            this._parentRect = this._baseRef.current.getBoundingClientRect();
+    };
+    const pointerMove = (event: PointerEvent) => {
+        event.preventDefault();
+        if (dragging) {
+            if(!followCursor && event.pointerId !== pointerId) return;
+            const absoluteX = event.clientX;
+            const absoluteY = event.clientY;
+            let relativeX = absoluteX - parentRect.left - radius;
+            let relativeY = absoluteY - parentRect.top - radius;
+            const dist = distance(relativeX, relativeY);
+            // @ts-ignore
+            const bounded = shapeBoundsFactory(
+                    //@ts-ignore
+                controlPlaneShape || baseShape,
+                absoluteX,
+                absoluteY,
+                relativeX,
+                relativeY,
+                dist,
+                radius,
+                baseSize,
+                parentRect);
+            relativeX = bounded.relativeX
+            relativeY = bounded.relativeY
+            const atan2 = Math.atan2(relativeX, relativeY);
 
-            this.setState({
-                dragging: true
+            updatePos({
+                relativeX,
+                relativeY,
+                distance: distanceToPercentile(dist, baseSize),
+                direction: getDirection(atan2),
+                axisX: absoluteX - parentRect.left,
+                axisY: absoluteY - parentRect.top
             });
+        }
+    };
+    const pointerDown = (e: PointerEvent) => {
+        if (disabled || followCursor) {
+            return;
+        }
+        parentRect = baseRef.current?.getBoundingClientRect();
+       setDragging(true);
+       setPointerId(e.pointerId);
+       window.addEventListener(InteractionEvents.PointerUp, event => pointerUp(event));
+       window.addEventListener(InteractionEvents.PointerMove, event => pointerMove(event));
+       console.log({pointerId})
+        stickRef.current?.setPointerCapture(e.pointerId);
 
-            window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
-
-            if (this.props.start) {
-                this.props.start({
+            if (start) {
+                start({
                     type: "start",
                     x: null,
                     y: null,
@@ -128,60 +208,51 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 });
             }
 
-        }
-    }
-
-    /**
-     * Update position of joystick - set state and trigger DOM manipulation
-     * @param coordinates
-     * @private
-     */
-    private _updatePos(coordinates: IJoystickCoordinates) {
+        };
+    const pointerUp = (event: PointerEvent) =>  {
+        console.log(event.pointerId, pointerId);
+        if(event.pointerId !== pointerId) return;
 
         window.requestAnimationFrame(() => {
-            this.setState({
-                coordinates
+            setDragging(false);
+            setCoordinates(null);
+        });
+        window.removeEventListener(InteractionEvents.PointerUp, event => pointerUp(event));
+        window.removeEventListener(InteractionEvents.PointerMove, event => pointerMove(event));
+        setPointerId(null);
+        if (stop) {
+            stop({
+                type: "stop",
+                // @ts-ignore
+                x: sticky ? coordinates.relativeX : null,
+                // @ts-ignore
+                y: sticky ? coordinates.relativeY : null,
+                // @ts-ignore
+                direction: sticky ? coordinates.direction : null,
+                // @ts-ignore
+                distance: sticky ? coordinates.distance : null
+
             });
-        });
-        if(typeof this.props.minDistance ===  'number'){
-            if(coordinates.distance < this.props.minDistance){
-                return;
-            }
         }
-        this._throttleMoveCallback({
-            type: "move",
-            x: coordinates.relativeX,
-            y: -coordinates.relativeY,
-            direction: coordinates.direction,
-            distance: coordinates.distance
-        });
 
     }
 
-    /**
-     * Handle pointerdown event
-     * @param e PointerEvent
-     * @private
-     */
-    private _pointerDown(e: PointerEvent) {
-        if (this.props.disabled || this.props.followCursor) {
-            return;
-        }
-        //@ts-ignore
-        this._parentRect = this._baseRef.current.getBoundingClientRect();
 
-        this.setState({
-            dragging: true
-        });
+    const baseStyle = useBaseStyle(baseSize, baseColor, baseShape, baseImage);
+    const stickStyle = useStickStyle(stickSize, baseSize, stickColor, stickImage, coordinates, stickShape);
 
-        window.addEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
-        window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
-        this._pointerId = e.pointerId
-        //@ts-ignore
-        this._stickRef.current.setPointerCapture(e.pointerId);
 
-        if (this.props.start) {
-            this.props.start({
+    useEffect(() => {
+        if (followCursor) {
+            //@ts-ignore
+        parentRect = baseRef.current.getBoundingClientRect();
+
+        setDragging(true);
+
+        window.addEventListener(InteractionEvents.PointerMove, event => pointerMove(event));
+
+        if (start) {
+            start({
                 type: "start",
                 x: null,
                 y: null,
@@ -190,218 +261,25 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             });
         }
 
-    }
-
-    /**
-     * Use ArcTan2 (4 Quadrant inverse tangent) to identify the direction the joystick is pointing
-     * https://docs.oracle.com/cd/B12037_01/olap.101/b10339/x_arcsin003.htm
-     * @param atan2: number
-     * @private
-     */
-    private _getDirection(atan2: number): JoystickDirection {
-        if (atan2 > RadianQuadrantBinding.TopRight || atan2 < RadianQuadrantBinding.TopLeft) {
-            return "FORWARD";
-        } else if (atan2 < RadianQuadrantBinding.TopRight && atan2 > RadianQuadrantBinding.BottomRight) {
-            return "RIGHT"
-        } else if (atan2 < RadianQuadrantBinding.BottomLeft) {
-            return "LEFT";
         }
-        return "BACKWARD";
+        return () => {
+            if (followCursor) {
+                window.removeEventListener(InteractionEvents.PointerMove, event => pointerMove(event));
+            }
+        };
+    });
+    //@ts-ignore
+    return (
+            <div className={disabled ? 'joystick-base-disabled' : ''}
 
-
-    }
-
-    /**
-     * Hypotenuse distance calculation
-     * @param x: number
-     * @param y: number
-     * @private
-     */
-    private _distance(x: number, y: number): number {
-        return Math.hypot(x, y);
-    }
-    private _distanceToPercentile(distance:number): number {
-        const percentageBaseSize = distance / (this._baseSize/2) * 100;
-        if(percentageBaseSize > 100){
-            return 100;
-        }
-        return percentageBaseSize;
-    }
-
-    /**
-     * Calculate X/Y and ArcTan within the bounds of the joystick
-     * @param event
-     * @private
-     */
-    private _pointerMove(event: PointerEvent) {
-        event.preventDefault()
-        if (this.state.dragging) {
-            if(!this.props.followCursor && event.pointerId !== this._pointerId) return;
-            const absoluteX = event.clientX;
-            const absoluteY = event.clientY;
-            let relativeX = absoluteX - this._parentRect.left - this._radius;
-            let relativeY = absoluteY - this._parentRect.top - this._radius;
-            const dist = this._distance(relativeX, relativeY);
-            // @ts-ignore
-            const bounded = shapeBoundsFactory(
-                //@ts-ignore
-                this.props.controlPlaneShape || this.props.baseShape,
-                absoluteX,
-                absoluteY,
-                relativeX,
-                relativeY,
-                dist,
-                this._radius,
-                this._baseSize,
-                this._parentRect);
-            relativeX = bounded.relativeX
-            relativeY = bounded.relativeY
-            const atan2 = Math.atan2(relativeX, relativeY);
-
-            this._updatePos({
-                relativeX,
-                relativeY,
-                distance: this._distanceToPercentile(dist),
-                direction: this._getDirection(atan2),
-                axisX: absoluteX - this._parentRect.left,
-                axisY: absoluteY - this._parentRect.top
-            });
-        }
-    }
-
-
-
-    /**
-     * Handle pointer up and de-register listen events
-     * @private
-     */
-    private _pointerUp(event: PointerEvent) {
-        if(event.pointerId !== this._pointerId) return;
-        const stateUpdate = {
-            dragging: false,
-        } as any;
-        if (!this.props.sticky) {
-            stateUpdate.coordinates = undefined;
-        }
-        window.requestAnimationFrame(() => {
-            this.setState(stateUpdate);
-        });
-        window.removeEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
-        window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
-        this._pointerId = null;
-        if (this.props.stop) {
-            this.props.stop({
-                type: "stop",
-                // @ts-ignore
-                x: this.props.sticky ? this.state.coordinates.relativeX : null,
-                // @ts-ignore
-                y: this.props.sticky ? this.state.coordinates.relativeY : null,
-                // @ts-ignore
-                direction: this.props.sticky ? this.state.coordinates.direction : null,
-                // @ts-ignore
-                distance: this.props.sticky ? this.state.coordinates.distance : null
-
-            });
-        }
-
-    }
-
-    /**
-     * Get the shape stylings for the base
-     * @private
-     */
-    private getBaseShapeStyle() {
-        const shape = this.props.baseShape || JoystickShape.Circle;
-        return shapeFactory(shape, this._baseSize);
-    }
-    /**
-     * Get the shape stylings for the stick
-     * @private
-     */
-    private getStickShapeStyle() {
-        const shape = this.props.stickShape || JoystickShape.Circle;
-        return shapeFactory(shape, this._baseSize);
-    }
-    /**
-     * Calculate base styles for pad
-     * @private
-     */
-    private _getBaseStyle(): any {
-        const baseColor: string = this.props.baseColor !== undefined ? this.props.baseColor : "#000033";
-
-        const baseSizeString = `${this._baseSize}px`;
-        const padStyle = {
-            ...this.getBaseShapeStyle(),
-            height: baseSizeString,
-            width: baseSizeString,
-            background: baseColor,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-        } as any;
-        if (this.props.baseImage) {
-            padStyle.background = `url(${this.props.baseImage})`;
-            padStyle.backgroundSize = '100%'
-        }
-        return padStyle;
-
-    }
-
-    /**
-     * Calculate  base styles for joystick and translate
-     * @private
-     */
-    private _getStickStyle(): any {
-        const stickColor: string = this.props.stickColor !== undefined ? this.props.stickColor : "#3D59AB";
-        const stickSize = this._stickSize ? `${this._stickSize}px` :`${this._baseSize / 1.5}px`;
-
-        let stickStyle = {
-            ...this.getStickShapeStyle(),
-            background: stickColor,
-            cursor: "move",
-            height: stickSize,
-            width: stickSize,
-            border: 'none',
-            flexShrink: 0,
-            touchAction: 'none'
-        } as any;
-        if (this.props.stickImage) {
-            stickStyle.background = `url(${this.props.stickImage})`;
-            stickStyle.backgroundSize = '100%'
-        }
-
-        if (this.state.coordinates !== undefined) {
-            stickStyle = Object.assign({}, stickStyle, {
-                position: 'absolute',
-                transform: `translate3d(${this.state.coordinates.relativeX}px, ${this.state.coordinates.relativeY}px, 0)`
-            });
-        }
-        return stickStyle;
-
-    }
-
-    render() {
-        this._baseSize = this.props.size || 100;
-        this._stickSize = this.props.stickSize;
-        this._radius = this._baseSize / 2;
-        const baseStyle = this._getBaseStyle();
-        const stickStyle = this._getStickStyle();
-        //@ts-ignore
-        return (
-            <div className={this.props.disabled ? 'joystick-base-disabled' : ''}
-
-                 ref={this._baseRef}
-                 style={baseStyle}>
-                <button ref={this._stickRef}
-                        disabled={this.props.disabled}
-                        onPointerDown={(event: any) => this._pointerDown(event)}
-                        className={this.props.disabled ? 'joystick-disabled' : ''}
-                        style={stickStyle}/>
+                ref={baseRef}
+                style={baseStyle}>
+                <button ref={stickRef}
+                    disabled={disabled}
+                    onPointerDown={(event: any) => pointerDown(event)}
+                    className={disabled ? 'joystick-disabled' : ''}
+                    style={stickStyle}/>
             </div>
-        )
-    }
+            );
 }
 
-export {
-    Joystick
-};
