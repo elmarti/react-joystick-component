@@ -46,10 +46,16 @@ jobs:
     steps:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+#        🤷
+        working-directory: ..
       - name: Build project
         run: yarn build
+#        🤷
+        working-directory: ..
       - name: Deploy storybook to Github Pages
         run: npm run deploy-storybook -- --ci
+#        🤷
+        working-directory: ..
         env:
           GH_TOKEN: ${{github.actor}}:${{ secrets.GITHUB_TOKEN }}
 
