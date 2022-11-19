@@ -49,7 +49,7 @@ jobs:
 #        🤷
         working-directory: ..
       - name: Build project
-        run: yarn build
+        run: ls
 #        🤷
         working-directory: ..
       - name: Deploy storybook to Github Pages
