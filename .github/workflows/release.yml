@@ -44,16 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: release
     steps:
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-#        🤷
-        working-directory: ..
-      - name: Build project
-        run: yarn build
       - name: Deploy storybook to Github Pages
         run: npm run deploy-storybook -- --ci
 #        🤷
-        working-directory: ..
         env:
           GH_TOKEN: ${{github.actor}}:${{ secrets.GITHUB_TOKEN }}
 
