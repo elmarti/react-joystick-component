@@ -39,8 +39,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Deploy storybook to Github Pages
-        run: npm run deploy-storybook -- --ci
-        env:
-          GH_TOKEN: MyCompany:${{ secrets.GITHUB_TOKEN }}
+
+  deploy-storybook:
+    - name: Deploy storybook to Github Pages
+      run: npm run deploy-storybook -- --ci
+      env:
+        GH_TOKEN: ${{github.actor}}:${{ secrets.GITHUB_TOKEN }}
 
