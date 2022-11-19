@@ -39,10 +39,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   deploy-storybook:
-    - name: Deploy storybook to Github Pages
-      run: npm run deploy-storybook -- --ci
-      env:
-        GH_TOKEN: ${{github.actor}}:${{ secrets.GITHUB_TOKEN }}
+    name: Deploy Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy storybook to Github Pages
+        run: npm run deploy-storybook -- --ci
+        env:
+          GH_TOKEN: ${{github.actor}}:${{ secrets.GITHUB_TOKEN }}
 
