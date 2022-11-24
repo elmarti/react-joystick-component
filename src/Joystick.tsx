@@ -294,9 +294,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.props.stop({
                 type: "stop",
                 // @ts-ignore
-                x: this.props.sticky ? this.state.coordinates.relativeX : null,
+                x: this.props.sticky ? ((this.state.coordinates.relativeX * 2) / this._baseSize) : null,
                 // @ts-ignore
-                y: this.props.sticky ? this.state.coordinates.relativeY : null,
+                y: this.props.sticky ? ((this.state.coordinates.relativeY * 2) / this._baseSize): null,
                 // @ts-ignore
                 direction: this.props.sticky ? this.state.coordinates.direction : null,
                 // @ts-ignore
