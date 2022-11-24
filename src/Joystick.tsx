@@ -2,6 +2,7 @@ import * as React from 'react';
 import {JoystickShape} from "./enums/shape.enum";
 import {shapeFactory} from "./shapes/shape.factory";
 import {shapeBoundsFactory} from "./shapes/shape.bounds.factory";
+import { DEFAULT_SIGNAL_RATE } from './constants';
 
 export interface IJoystickProps {
     size?: number;
@@ -21,6 +22,11 @@ export interface IJoystickProps {
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
     minDistance?: number;
+    config?: IJoystickConfig;
+}
+export interface IJoystickConfig {
+    continuous?: boolean;
+    signalRate?: number;
 }
 
 enum InteractionEvents {
@@ -30,7 +36,7 @@ enum InteractionEvents {
 }
 
 export interface IJoystickUpdateEvent {
-    type: "move" | "stop" | "start";
+    type: "move" | "stop" | "start" | "stream";
     // TODO: these could just be optional, but this may be a breaking change
     x: number | null;
     y: number | null;
@@ -43,7 +49,7 @@ export interface IJoystickState {
     coordinates?: IJoystickCoordinates;
 }
 
-type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
+type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD" | "CENTER";
 
 export interface IJoystickCoordinates {
     relativeX: number;
@@ -75,6 +81,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _radius: number;
     private _parentRect: DOMRect;
     private _pointerId: number|null = null
+
+    // @ts-ignore
+    private _signalInterval: Timer;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -108,6 +117,25 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     componentDidMount() {
+        this.setState({
+            coordinates: {
+                distance: 0,
+                relativeX: 0,
+                relativeY: 0,
+                axisX: 0,
+                axisY: 0,
+                direction: 'CENTER',
+            }
+        })
+        if(this.props.config?.continuous){
+            this._signalInterval = setInterval(()=> {
+                console.log('interval', this.state.coordinates)
+                if(this.props.move && this.state.coordinates) {
+                    //@ts-ignore
+                    this.props.move(this.state.coordinates);
+                }
+            }, this.props.config.signalRate || DEFAULT_SIGNAL_RATE);
+        }
         if (this.props.followCursor) {
             //@ts-ignore
             this._parentRect = this._baseRef.current.getBoundingClientRect();
@@ -148,13 +176,15 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 return;
             }
         }
-        this._throttleMoveCallback({
-            type: "move",
-            x: this.props.size ? ((coordinates.relativeX * 2) / this.props.size) : coordinates.relativeX,
-            y: this.props.size ? -((coordinates.relativeY*2) / this.props.size) : coordinates.relativeY,
-            direction: coordinates.direction,
-            distance: coordinates.distance
-        });
+        if(!this.props.config?.continuous) {
+            this._throttleMoveCallback({
+                type: "move",
+                x: this.props.size ? ((coordinates.relativeX * 2) / this.props.size) : coordinates.relativeX,
+                y: this.props.size ? -((coordinates.relativeY * 2) / this.props.size) : coordinates.relativeY,
+                direction: coordinates.direction,
+                distance: coordinates.distance
+            });
+        }
 
     }
 
@@ -257,15 +287,15 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             relativeX = bounded.relativeX
             relativeY = bounded.relativeY
             const atan2 = Math.atan2(relativeX, relativeY);
+                this._updatePos({
+                    relativeX,
+                    relativeY,
+                    distance: this._distanceToPercentile(dist),
+                    direction: this._getDirection(atan2),
+                    axisX: absoluteX - this._parentRect.left,
+                    axisY: absoluteY - this._parentRect.top
+                });
 
-            this._updatePos({
-                relativeX,
-                relativeY,
-                distance: this._distanceToPercentile(dist),
-                direction: this._getDirection(atan2),
-                axisX: absoluteX - this._parentRect.left,
-                axisY: absoluteY - this._parentRect.top
-            });
         }
     }
 
@@ -281,7 +311,14 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             dragging: false,
         } as any;
         if (!this.props.sticky) {
-            stateUpdate.coordinates = undefined;
+            stateUpdate.coordinates = {
+                distance: null,
+                relativeX: null,
+                relativeY: null,
+                axisX: null,
+                axisY: null,
+                direction: 'CENTER',
+            };
         }
         window.requestAnimationFrame(() => {
             this.setState(stateUpdate);
@@ -370,7 +407,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             stickStyle.backgroundSize = '100%'
         }
 
-        if (this.state.coordinates !== undefined) {
+        if (this.state.coordinates && this.state.coordinates.direction !== 'CENTER' ) {
             stickStyle = Object.assign({}, stickStyle, {
                 position: 'absolute',
                 transform: `translate3d(${this.state.coordinates.relativeX}px, ${this.state.coordinates.relativeY}px, 0)`

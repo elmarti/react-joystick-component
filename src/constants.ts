@@ -1,0 +1,1 @@
+export const DEFAULT_SIGNAL_RATE = 1000;
