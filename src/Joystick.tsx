@@ -75,7 +75,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private _radius: number;
     private _parentRect: DOMRect;
     private _pointerId: number|null = null
-    private _distanceRatio: number;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -383,7 +382,6 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     render() {
         this._baseSize = this.props.size || 100;
-        this._distanceRatio = this._baseSize / 100;
         this._stickSize = this.props.stickSize;
         this._radius = this._baseSize / 2;
         const baseStyle = this._getBaseStyle();
