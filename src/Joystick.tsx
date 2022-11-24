@@ -114,6 +114,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (this.props.followCursor) {
             window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
         }
+        if(this._signalInterval){
+            clearInterval(this._signalInterval);
+        }
     }
 
     componentDidMount() {
@@ -178,7 +181,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         }
         if(!this.props.config?.continuous) {
             this._throttleMoveCallback({
-                type: "move",
+                type: this.props.config?.continuous ? "stream" : "move",
                 x: this.props.size ? ((coordinates.relativeX * 2) / this.props.size) : coordinates.relativeX,
                 y: this.props.size ? -((coordinates.relativeY * 2) / this.props.size) : coordinates.relativeY,
                 direction: coordinates.direction,
@@ -330,13 +333,13 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.props.stop({
                 type: "stop",
                 // @ts-ignore
-                x: this.props.sticky ? this.state.coordinates.relativeX : null,
+                x: this.props.sticky ? this.state.coordinates.relativeX : 0,
                 // @ts-ignore
-                y: this.props.sticky ? this.state.coordinates.relativeY : null,
+                y: this.props.sticky ? this.state.coordinates.relativeY : 0,
                 // @ts-ignore
-                direction: this.props.sticky ? this.state.coordinates.direction : null,
+                direction: this.props.sticky ? this.state.coordinates.direction : 0,
                 // @ts-ignore
-                distance: this.props.sticky ? this.state.coordinates.distance : null
+                distance: this.props.sticky ? this.state.coordinates.distance : 0
 
             });
         }
