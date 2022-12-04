@@ -109,7 +109,8 @@ joystickStories.add("Controlling a react-parallax-tilt ", () => {
     const [[manualTiltAngleX, manualTiltAngleY], setManualTiltAngle] = useState([0, 0] as Array<number|null>);
 
     const onMove = (stick:IJoystickUpdateEvent) => {
-        setManualTiltAngle([stick.y, stick.x]);
+        //@ts-ignore
+        setManualTiltAngle([stick.y * 100, stick.x * 100]);
     };
 
     const onStop = () => {

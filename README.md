@@ -19,10 +19,6 @@ import { Joystick } from 'react-joystick-component';
 <Joystick size={100} sticky={true} baseColor="red" stickColor="blue" move={handleMove} stop={handleStop}></Joystick>
 ```
 
-### Migrating from V1
-The main breaking change is that the control plane is no longer square by default - if you require a square control plane on a circular joystick, you can set `controlPlaneShape='square'` which will give you the original behaviour.
-
-
 Component Props - as described by IJoystickProps - all are optional
 
 | Prop  | Type  | Description  |

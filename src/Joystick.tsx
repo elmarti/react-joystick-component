@@ -179,11 +179,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 return;
             }
         }
+
         if(!this.props.config?.continuous) {
             this._throttleMoveCallback({
-                type: this.props.config?.continuous ? "stream" : "move",
-                x: this.props.size ? ((coordinates.relativeX * 2) / this.props.size) : coordinates.relativeX,
-                y: this.props.size ? -((coordinates.relativeY * 2) / this.props.size) : coordinates.relativeY,
+                type: "move",
+                x: ((coordinates.relativeX * 2) / this._baseSize),
+                y: -((coordinates.relativeY * 2) / this._baseSize),
                 direction: coordinates.direction,
                 distance: coordinates.distance
             });
@@ -333,9 +334,9 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             this.props.stop({
                 type: "stop",
                 // @ts-ignore
-                x: this.props.sticky ? this.state.coordinates.relativeX : 0,
+                x: this.props.sticky ? ((this.state.coordinates.relativeX * 2) / this._baseSize) : null,
                 // @ts-ignore
-                y: this.props.sticky ? this.state.coordinates.relativeY : 0,
+                y: this.props.sticky ? ((this.state.coordinates.relativeY * 2) / this._baseSize): null,
                 // @ts-ignore
                 direction: this.props.sticky ? this.state.coordinates.direction : 0,
                 // @ts-ignore
