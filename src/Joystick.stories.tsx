@@ -31,7 +31,14 @@ joystickStories.add("Yellow (custom colors) joystick",
         stickColor={"#FFD300"} move={action("Moved")}
         stop={action("Stopped")}/>);
 
-
+joystickStories.add("Y Axis only",
+        () => <Joystick
+            controlPlaneShape={JoystickShape.AxisY}  start={action("Started")} throttle={50}
+            move={action("Moved")} stop={action("Stopped")}/>);
+joystickStories.add("X Axis only",
+        () => <Joystick
+            controlPlaneShape={JoystickShape.AxisX}  start={action("Started")} throttle={50}
+            move={action("Moved")} stop={action("Stopped")}/>);
 joystickStories.add("50ms throttled joystick", () => <Joystick start={action("Started")} throttle={50}
                                                                move={action("Moved")} stop={action("Stopped")}/>);
 
