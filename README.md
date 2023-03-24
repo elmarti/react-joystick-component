@@ -38,7 +38,7 @@ Component Props - as described by IJoystickProps - all are optional
 | disabled | Boolean | When true, block any usage of the Joystick. This will also apply the `joystick-disabled` and `joystick-base-disabled` classNames  |
 | stickShape | JoystickShape | The shape of the joystick default = circle|
 | baseShape | JoystickShape | The shape of the joystick default = circle|
-| controlPlaneShape | JoystickShape | Override the default shape behaviour of the control plane|
+| controlPlaneShape | JoystickShape | Override the default shape behaviour of the control plane - circle, square, axisX, axisY|
 | minDistance | number | Percentage 0-100 - the minimum distance to start receive IJoystickMove events|
 
 ```TypeScript
