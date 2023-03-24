@@ -15,7 +15,15 @@ export const shapeBoundsFactory = (
             relativeX = getWithinBounds(absoluteX - parentRect.left - (baseSize / 2), baseSize);
             relativeY = getWithinBounds(absoluteY - parentRect.top - (baseSize / 2), baseSize);
             return {relativeX, relativeY};
+        case JoystickShape.AxisX:
+            relativeX = getWithinBounds(absoluteX - parentRect.left - (baseSize / 2), baseSize);
+            relativeY = 0;
+        return {relativeX, relativeY};
 
+        case JoystickShape.AxisY:
+            relativeX = 0
+            relativeY = getWithinBounds(absoluteY - parentRect.top - (baseSize / 2), baseSize);
+            return {relativeX, relativeY};
         default:
             if (dist > radius) {
                 relativeX *= radius / dist;
