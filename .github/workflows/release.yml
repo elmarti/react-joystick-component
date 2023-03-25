@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '18'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build project
@@ -36,8 +36,6 @@ jobs:
       - name: Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@v2
-        with:
-          semantic_version: 20
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
