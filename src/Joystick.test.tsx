@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { Joystick, IJoystickProps } from './Joystick';
 import { JoystickShape } from 'enums/shape.enum';
 import '@testing-library/jest-dom';
@@ -102,7 +102,7 @@ describe('Joystick component', () => {
     });
 
     test('applies custom styles based on the baseColor, stickColor, size, and stickSize props', () => {
-        const { container } = render(
+        render(
             <Joystick
                 {...defaultProps}
                 baseColor="red"
