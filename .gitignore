@@ -4,3 +4,4 @@ build
 .cache
 yarn-error.log
 .DS_Store
+coverage
