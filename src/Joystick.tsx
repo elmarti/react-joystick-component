@@ -71,10 +71,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private readonly _throttleMoveCallback: (data: IJoystickUpdateEvent) => void;
     private _baseSize: number;
     private _stickSize?: number;
+    private frameId: number | null = null;
 
     private _radius: number;
     private _parentRect: DOMRect;
     private _pointerId: number|null = null
+    private _mounted = false;
 
     constructor(props: IJoystickProps) {
         super(props);
@@ -102,12 +104,17 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     }
 
     componentWillUnmount() {
+        this._mounted = false;
         if (this.props.followCursor) {
             window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+        }
+        if (this.frameId !== null) {
+            window.cancelAnimationFrame(this.frameId);
         }
     }
 
     componentDidMount() {
+        this._mounted = true;
         if (this.props.followCursor) {
             //@ts-ignore
             this._parentRect = this._baseRef.current.getBoundingClientRect();
@@ -138,11 +145,14 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      */
     private _updatePos(coordinates: IJoystickCoordinates) {
 
-        window.requestAnimationFrame(() => {
-            this.setState({
-                coordinates
-            });
-        });
+        this.frameId = window.requestAnimationFrame(() => {
+            if(this._mounted){
+                this.setState({
+                    coordinates,
+                });
+            }
+          });
+          
         if(typeof this.props.minDistance ===  'number'){
             if(coordinates.distance < this.props.minDistance){
                 return;
@@ -283,9 +293,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (!this.props.sticky) {
             stateUpdate.coordinates = undefined;
         }
-        window.requestAnimationFrame(() => {
-            this.setState(stateUpdate);
-        });
+        this.frameId = window.requestAnimationFrame(() => {
+            if(this._mounted){
+                this.setState(stateUpdate);
+            }
+          });
+          
         window.removeEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
         window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
         this._pointerId = null;
@@ -388,7 +401,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         const stickStyle = this._getStickStyle();
         //@ts-ignore
         return (
-            <div className={this.props.disabled ? 'joystick-base-disabled' : ''}
+            <div data-testid="joystick-base" className={this.props.disabled ? 'joystick-base-disabled' : ''}
 
                  ref={this._baseRef}
                  style={baseStyle}>
