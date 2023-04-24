@@ -21,6 +21,7 @@ export interface IJoystickProps {
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
     minDistance?: number;
+    pos?: {x: number, y: number};
 }
 
 enum InteractionEvents {
@@ -381,6 +382,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         if (this.props.stickImage) {
             stickStyle.background = `url(${this.props.stickImage})`;
             stickStyle.backgroundSize = '100%'
+        }
+        if(this.props.pos){
+            stickStyle = Object.assign({}, stickStyle, {
+                position: 'absolute',
+                transform: `translate3d(${(this.props.pos.x * this._baseSize)/2 }px, ${-(this.props.pos.y * this._baseSize)/2}px, 0)`
+            });
         }
 
         if (this.state.coordinates !== undefined) {
