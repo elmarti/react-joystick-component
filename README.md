@@ -40,7 +40,7 @@ Component Props - as described by IJoystickProps - all are optional
 | baseShape | JoystickShape | The shape of the joystick default = circle|
 | controlPlaneShape | JoystickShape | Override the default shape behaviour of the control plane - circle, square, axisX, axisY|
 | minDistance | number | Percentage 0-100 - the minimum distance to start receive IJoystickMove events|
-
+| pos | {x: number, y: number}| Override the joystick position (doesn't work if the user is interacting. You can use `disabled` to force this)|
 ```TypeScript
 import {JoystickShape} from "./shape.enum"; 
 interface IJoystickProps {
@@ -61,6 +61,7 @@ interface IJoystickProps {
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
     minDistance?: number;
+    pos: {x: number, y: number}
 }
 ```
 
