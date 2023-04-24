@@ -178,5 +178,22 @@ describe('Joystick component', () => {
       
       //   expect(moveCallback).not.toHaveBeenCalled();
       // });
+
+
+  test('renders the joystick stick at the correct position when the pos prop is provided', () => {
+    const pos = { x: 0.4, y: -0.6 };
+    const size = 100;
+    const expectedStickPosition = {
+      x: (pos.x * size) / 2,
+      y: -(pos.y * size) / 2,
+    };
+
+    render(<Joystick size={size} pos={pos} />);
+    const stick = screen.getByRole('button');
+
+    expect(stick).toHaveStyle({
+      transform: `translate3d(${expectedStickPosition.x}px, ${expectedStickPosition.y}px, 0)`,
+    });
+  });
       
   });

@@ -31,6 +31,27 @@ joystickStories.add("Yellow (custom colors) joystick",
         stickColor={"#FFD300"} move={action("Moved")}
         stop={action("Stopped")}/>);
 
+joystickStories.add("Position override",
+() => <Joystick
+    start={action("Started")}
+    pos={{x: 40, y: 40}}
+    baseColor={"#FFFF99"}
+    stickColor={"#FFD300"} move={action("Moved")}
+    stop={action("Stopped")}/>);
+
+    joystickStories.add("Position override with second joystick",
+() => {
+const [joystickPos, setJoystickPos] = useState({x:0, y:0});
+const handleMove = (event) => {
+    setJoystickPos({x: event.x, y: event.y})
+};
+return <>
+<Joystick pos={joystickPos} move={handleMove}/>
+
+<Joystick pos={joystickPos} disabled={true}/>
+
+</>;});
+
 joystickStories.add("Y Axis only",
         () => <Joystick
             controlPlaneShape={JoystickShape.AxisY}  start={action("Started")} throttle={50}
