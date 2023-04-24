@@ -46,7 +46,7 @@ const handleMove = (event) => {
     setJoystickPos({x: event.x, y: event.y})
 };
 return <>
-<Joystick move={handleMove}/>
+<Joystick pos={joystickPos} move={handleMove}/>
 
 <Joystick pos={joystickPos} disabled={true}/>
 
