@@ -34,7 +34,7 @@ joystickStories.add("Yellow (custom colors) joystick",
 joystickStories.add("Position override",
 () => <Joystick
     start={action("Started")}
-    pos={{x: 40, y: 40}}
+    pos={{x: 0.5, y: 0.5}}
     baseColor={"#FFFF99"}
     stickColor={"#FFD300"} move={action("Moved")}
     stop={action("Stopped")}/>);
