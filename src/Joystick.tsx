@@ -300,7 +300,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             }
           });
           
-        window.removeEventListener(InteractionEvents.PointerUp, this._pointerUp));
+        window.removeEventListener(InteractionEvents.PointerUp, this._pointerUp);
         window.removeEventListener(InteractionEvents.PointerMove, this._pointerMove);
         this._pointerId = null;
         if (this.props.stop) {
