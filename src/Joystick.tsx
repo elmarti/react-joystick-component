@@ -185,8 +185,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             dragging: true
         });
 
-        window.addEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
-        window.addEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+        window.addEventListener(InteractionEvents.PointerUp, this._pointerUp);
+        window.addEventListener(InteractionEvents.PointerMove, this._pointerMove);
         this._pointerId = e.pointerId
         //@ts-ignore
         this._stickRef.current.setPointerCapture(e.pointerId);
@@ -244,7 +244,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * @param event
      * @private
      */
-    private _pointerMove(event: PointerEvent) {
+    private _pointerMove = (event: PointerEvent) => {
         event.preventDefault()
         if (this.state.dragging) {
             if(!this.props.followCursor && event.pointerId !== this._pointerId) return;
@@ -286,7 +286,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
      * Handle pointer up and de-register listen events
      * @private
      */
-    private _pointerUp(event: PointerEvent) {
+    private _pointerUp = (event: PointerEvent) => {
         if(event.pointerId !== this._pointerId) return;
         const stateUpdate = {
             dragging: false,
@@ -300,8 +300,8 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             }
           });
           
-        window.removeEventListener(InteractionEvents.PointerUp, event => this._pointerUp(event));
-        window.removeEventListener(InteractionEvents.PointerMove, event => this._pointerMove(event));
+        window.removeEventListener(InteractionEvents.PointerUp, this._pointerUp));
+        window.removeEventListener(InteractionEvents.PointerMove, this._pointerMove);
         this._pointerId = null;
         if (this.props.stop) {
             this.props.stop({
