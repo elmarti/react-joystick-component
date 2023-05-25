@@ -24,6 +24,7 @@ export interface IJoystickProps {
     pos?: {x: number, y: number};
 }
 
+
 enum InteractionEvents {
     PointerDown = "pointerdown",
     PointerMove = "pointermove",
