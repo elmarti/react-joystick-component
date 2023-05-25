@@ -1,7 +1,1 @@
-.idea
-node_modules
-build
-.cache
-yarn-error.log
-.DS_Store
-coverage
+node_modules/

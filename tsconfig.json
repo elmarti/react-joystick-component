@@ -1,26 +1,19 @@
 {
-  "compilerOptions": {
-    "outDir": "build/lib",
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es5", "es6", "es7", "es2017", "dom"],
-    "sourceMap": true,
-    "allowJs": false,
-    "jsx": "react",
-    "moduleResolution": "node",
-    "rootDir": "src",
-    "baseUrl": "src",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
-    "declaration": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true
-  },
-  "include": ["src/**/*", "types/**/*"],
-  "exclude": ["node_modules", "build", "scripts", "src/Joystick.stories.tsx", "src/Joystick.test.tsx"]
+ "compilerOptions": {
+   "module": "commonjs",
+   "declaration": true,
+   "noImplicitAny": false,
+   "removeComments": true,
+   "noLib": false,
+   "emitDecoratorMetadata": true,
+   "experimentalDecorators": true,
+   "target": "es6",
+   "sourceMap": true,
+   "lib": [
+     "es6"
+   ]
+ },
+ "exclude": [
+   "node_modules"
+ ]
 }
