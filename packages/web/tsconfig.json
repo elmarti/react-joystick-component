@@ -17,13 +17,9 @@
     "noUnusedLocals": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "paths": {
-      "@joystick/core":["../core/src/index.ts"]
-    }
+    "experimentalDecorators": true
   },
 
-  "references": [{ "path": "../core/build/src/index.js" }],
   "include": ["./src/**/*"],
   "exclude": ["node_modules", "build", "scripts", "web/src/Joystick.stories.tsx", "web/src/Joystick.test.tsx"]
 }

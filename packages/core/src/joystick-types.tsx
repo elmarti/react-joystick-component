@@ -25,13 +25,13 @@ export interface IJoystickProps {
     pos?: {x: number, y: number};
 }
 export interface IJoystickAdapter {
-    getStickStyle(): unknown;
-    getBaseStyle(): unknown;
-    removeUpListener(): unknown;
-    isCurrentPointer(event: PointerEvent): unknown;
+    getStickStyle(props: IJoystickProps, stickSize: number | undefined, baseSize: number, coordinates: IJoystickCoordinates | undefined): any;
+    getBaseStyle(props:IJoystickProps, stickSize: number | undefined, baseSize: number): any;
+    removeUpListener(): void;
+    isCurrentPointer(event: PointerEvent): boolean;
     getPosition(event: PointerEvent): { absoluteX: any; absoluteY: any; relativeX: any; relativeY: any; };
     canMove(event: PointerEvent, props: IJoystickProps): unknown;
-    setPointerCapture(e: PointerEvent): unknown;
+    setPointerCapture(e: PointerEvent): void;
     registerUpListeners(stop: ((event: IJoystickUpdateEvent) => void) | undefined): unknown;
     removeMoveListener(): void;
     registerMoveListener(move: any): void;

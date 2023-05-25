@@ -1,4 +1,4 @@
-import {JoystickShape} from "../enums/shape.enum";
+import { JoystickShape } from "joystick-core";
 
 export const shapeFactory = (shape: JoystickShape, size: number) =>{
     switch (shape){

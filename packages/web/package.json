@@ -62,8 +62,6 @@
     "react-dom": ">=17.0.2"
   },
   "dependencies": {
-    "core": "^1.0.113",
-    "joystick-core": "*",
-    "web": "^0.0.2"
+    "joystick-core": "*"
   }
 }

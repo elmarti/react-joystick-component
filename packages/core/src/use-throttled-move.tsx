@@ -3,7 +3,7 @@ import { IJoystickUpdateEvent } from "./joystick-types";
 
 
 
-export const useThrottledMove = (rate = 0, move:(event: IJoystickUpdateEvent)=>void): (event: IJoystickUpdateEvent) => void => {
+export const useThrottledMove = (rate = 0, move:(event: IJoystickUpdateEvent)=>void | undefined): (event: IJoystickUpdateEvent) => void => {
     const throttledMove = useCallback(() => {
         let lastCall = 0;
         return (event: IJoystickUpdateEvent) => {
@@ -21,5 +21,5 @@ export const useThrottledMove = (rate = 0, move:(event: IJoystickUpdateEvent)=>v
 
    return throttledMove;
 
-            
+
 };

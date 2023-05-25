@@ -9,10 +9,10 @@
     "component",
     "typescript"
   ],
-  "main": "build/lib/index.js",
-  "types": "build/lib/index.d.ts",
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
   "files": [
-    "build/lib",
+    "build/src",
     "src"
   ],
   "scripts": {

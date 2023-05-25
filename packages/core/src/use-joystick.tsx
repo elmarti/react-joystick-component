@@ -8,15 +8,15 @@ import { useThrottledMove } from "./use-throttled-move";
 
 
 export const useJoystick = (
-    props: IJoystickProps, 
-    env: JoystickEnvironment, 
-    joystickAdapter: IJoystickAdapter,
-    move: any,
+    props: IJoystickProps,
+    env: JoystickEnvironment,
+    joystickAdapter: IJoystickAdapter
   ) => {
     const [dragging, setDragging] = useState(false);
     const [coordinates, setCoordinates] = useState<IJoystickCoordinates | undefined>(undefined);
     const [parentRect, setParentRect] = useState(null);
-    const throttledMove = useThrottledMove(props.throttle, move);
+    //@ts-ignore
+    const throttledMove = useThrottledMove(props.throttle, props.move);
     useEffect(()=> {
         if(env === JoystickEnvironment.ReactNative){
             // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -25,12 +25,12 @@ export const useJoystick = (
             };
         }
         if (props.followCursor) {
-            //@ts-ignore
+            // @ts-ignore
             setParentRect(joystickAdapter.getParentRect());
 
             setDragging(true);
 
-            joystickAdapter.registerMoveListener(move);
+            joystickAdapter.registerMoveListener(props.move);
 
             if (props.start) {
                 props.start({
@@ -42,18 +42,18 @@ export const useJoystick = (
                 });
             }
 
-        }     
+        }
         return () => {
             if(props.followCursor){
                 joystickAdapter.removeMoveListener();
             }
         };
-    }, [move]);
+    }, [props.move]);
     const baseSize = props.size || 100;
-    // const stickSize = props.stickSize
+    const stickSize = props.stickSize
     const radius = useMemo(() => baseSize / 2, [baseSize]);
 
-   
+
     return {
         updatePos(coordinates: IJoystickCoordinates){
             if(env === JoystickEnvironment.React){
@@ -116,12 +116,13 @@ export const useJoystick = (
         pointerMove(event: PointerEvent){
             if(dragging){
                 if(joystickAdapter.canMove(event, props)){
-                    return; 
+                    return;
                 }
+                //@ts-ignore
                 let {absoluteX, absoluteY, relativeX, relativeY} = joystickAdapter.getPosition(event);
                 const dist = this.distance(relativeX, relativeY);
                 const bounded = shapeBoundsFactory(
-                    //@ts-ignore
+                    // @ts-ignore
                     props.controlPlaneShape || props.baseShape,
                     absoluteX,
                     absoluteY,
@@ -139,16 +140,16 @@ export const useJoystick = (
                 relativeY,
                 distance: this.distanceToPercentile(dist),
                 direction: this.getDirection(atan2),
-                //@ts-ignore
+                // @ts-ignore
                 axisX: absoluteX - parentRect.left,
-                //@ts-ignore
+                // @ts-ignore
                 axisY: absoluteY - parentRect.top
             })
             }
         },
         pointerUp(event: PointerEvent){
             if(!joystickAdapter.isCurrentPointer(event)){
-                return; 
+                return;
             }
             if(!props.sticky){
                 setCoordinates(undefined);
@@ -167,7 +168,7 @@ export const useJoystick = (
                     direction: props.sticky ? state.coordinates.direction : null,
                     // @ts-ignore
                     distance: props.sticky ? state.coordinates.distance : null
-    
+
                 });
             }
         },
@@ -175,15 +176,12 @@ export const useJoystick = (
             const shape = props.baseShape || JoystickShape.Circle;
             return shapeFactory(shape, baseSize);
         },
-        getStickShapeStyle() {
-            const shape = props.stickShape || JoystickShape.Circle;
-            return shapeFactory(shape, baseSize);
-        },
+       
         getBaseStyle() {
-            return joystickAdapter.getBaseStyle();
+            return joystickAdapter.getBaseStyle(props, stickSize, baseSize);
         },
         getStickStyle() {
-            return joystickAdapter.getStickStyle();
+            return joystickAdapter.getStickStyle(props, stickSize, baseSize, coordinates);
         },
         dragging,
         setDragging,

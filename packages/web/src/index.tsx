@@ -1,2 +1,2 @@
 export { Joystick } from "./Joystick";
-export { JoystickShape } from '@joystick/core';
+export { JoystickShape } from 'joystick-core';

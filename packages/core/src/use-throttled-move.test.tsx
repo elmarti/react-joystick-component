@@ -10,7 +10,7 @@ describe('useThrottledMove', () => {
         const event: IJoystickUpdateEvent = { type: "move", x: 10, y: 10, direction: "FORWARD", distance: 20 };
 
         const { result } = renderHook(() => useThrottledMove(1000, moveMock));
-        
+
         // Get the throttledMove function once and reuse it
         const throttledMove = result.current();
 

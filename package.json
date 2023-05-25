@@ -1,10 +1,10 @@
 {
-  "name": "root",
+  "name": "react-joystick-component",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/elmarti/react-joystick-component.git",
+  "author": "elmarti <jerpdertin@gmail.com>",
+  "license": "MIT",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "devDependencies": {
-    "lerna": "^6.6.2"
-  }
+  "workspaces": ["packages/*"]
 }
