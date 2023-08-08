@@ -17,6 +17,7 @@ export interface IJoystickProps {
     stickImage?: string;
     baseImage?: string;
     followCursor?: boolean;
+    baseClick?: boolean;
     baseShape?: JoystickShape;
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
@@ -117,6 +118,10 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
 
     componentDidMount() {
         this._mounted = true;
+        if (this.props.baseClick) {
+            this._baseRef.current?.addEventListener(InteractionEvents.PointerDown, event => this._pointerDown(event));
+        }
+
         if (this.props.followCursor) {
             //@ts-ignore
             this._parentRect = this._baseRef.current.getBoundingClientRect();
@@ -200,8 +205,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
                 distance: null,
                 direction: null
             });
+            
         }
 
+        if (this.props.baseClick) {
+            this._pointerMove(e);
+        }
     }
 
     /**
